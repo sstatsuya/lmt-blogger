@@ -1,9 +1,8 @@
 // src/pages/HomePage.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MyLayout from '../layouts/MainLayout';
-import { EnvironmentFilled, GithubOutlined, LinkedinOutlined, MailFilled, MailOutlined, PhoneFilled, PhoneOutlined } from '@ant-design/icons';
+import { EnvironmentFilled, GithubOutlined, LinkedinOutlined, MailFilled, PhoneFilled } from '@ant-design/icons';
 import { descriptions, education, experience } from './data';
-import { IMAGES } from '../assets';
 
 
 
@@ -27,7 +26,6 @@ const HomePage = () => {
     const runDesc = () => {
         setTimeout(async () => {
             var fullDesc = fullDescRef.current
-            var fullDescIdx = fullDescIdxRef.current
             let curDescIdx = curDescIdxRef.current
 
             curDescRef.current += fullDesc[curDescIdx]
@@ -221,7 +219,7 @@ const ProjectItem = () => {
             <p className='text-gray-400 text-base mt-2 line-clamp-2'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled</p>
             <div className='gap-4 flex flex-row align-middle mt-4'>
                 {
-                    projectLang.map((item, index) => {
+                    projectLang.map((item) => {
                         return <span className='p-1 px-2 text-xs rounded-lg bg-title text-center text-gray-300'>{item}</span>
                     })
                 }

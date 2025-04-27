@@ -39,7 +39,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
 export default MainLayout;
 
-import { GithubOutlined, MoonOutlined, SmileOutlined } from '@ant-design/icons';
+import { GithubOutlined, MoonOutlined } from '@ant-design/icons';
 
 const UtilityBtn = ({ icon }: { icon: any }) => {
   return <div className='p-2 cursor-pointer group rounded-md hover:bg-hover flex-center transition-all duration-200 '>
