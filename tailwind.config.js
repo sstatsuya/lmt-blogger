@@ -23,7 +23,8 @@ module.exports = {
         'dim-border': 'rgb(46, 43, 48)',
         plhd: 'hsl(215deg 9.45% 41.68%)',
         // title: 'rgb(62, 137, 250)'
-        title: 'rgb(117, 3, 183)'
+        title: 'rgb(117, 3, 183)',
+        footer: 'rgb(12 21 35)'
       },
       borderWidth: {
         '1': '1px',  // Thêm giá trị border-1
@@ -71,6 +72,9 @@ module.exports = {
             transform: 'scale(1.025) ',
           },
         },
+        '.animate-transition': {
+          transition: 'all 0.5s',
+        }
       })
     }
   ],

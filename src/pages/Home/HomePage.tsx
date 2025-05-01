@@ -1,8 +1,7 @@
 // src/pages/HomePage.tsx
 import { useEffect, useRef, useState } from 'react';
-import MyLayout from '../layouts/MainLayout';
 import { EnvironmentFilled, GithubOutlined, LinkedinOutlined, MailFilled, PhoneFilled } from '@ant-design/icons';
-import { descriptions, education, experience } from './data';
+import { descriptions, education, experience } from '../data';
 
 
 
@@ -135,11 +134,11 @@ const HomePage = () => {
                     <div className='flex-1 flex align-middle gap-4'>
                         <div className='flex flex-col flex-1 '>
                             <p className='text-sm text-white'>Tên bạn</p>
-                            <input className='text-sm outline-offset-0 flex-1 mt-1 px-2 text-gray-400 h-8 border-1 border-dim-border focus:border-gray-500 focus:outline focus:outline-gray-300 focus:outline-1 outline-none rounded-lg bg-transparent' />
+                            <input className='text-sm outline-offset-0 mt-1 px-2 text-gray-400 h-8 border-1 border-dim-border focus:border-gray-500 focus:outline focus:outline-gray-300 focus:outline-1 outline-none rounded-lg bg-transparent' />
                         </div>
                         <div className='flex flex-col flex-1'>
                             <p className='text-sm text-white'>Email của bạn</p>
-                            <input className='text-sm outline-offset-0 flex-1 mt-1 px-2 text-gray-400 h-8 border-1 border-dim-border focus:border-gray-500 focus:outline focus:outline-gray-300 focus:outline-1 outline-none rounded-lg bg-transparent' />
+                            <input className='text-sm outline-offset-0 mt-1 px-2 text-gray-400 h-8 border-1 border-dim-border focus:border-gray-500 focus:outline focus:outline-gray-300 focus:outline-1 outline-none rounded-lg bg-transparent' />
                         </div>
                     </div>
 
@@ -162,14 +161,12 @@ const HomePage = () => {
     }
 
     return (
-        <MyLayout>
-            <div className="flex flex-col p-6 align-middle px-[20%]">
-                {renderTitle()}
-                {renderAboutMe()}
-                {renderProjectList()}
-                {renderGetInTouch()}
-            </div>
-        </MyLayout>
+        <div className="flex flex-col p-6 align-middle">
+            {renderTitle()}
+            {renderAboutMe()}
+            {renderProjectList()}
+            {renderGetInTouch()}
+        </div>
     );
 };
 
