@@ -6,8 +6,10 @@ const Post = () => {
 
     const navigation = useNavigate();
 
-    return <div className="flex flex-1 flex-col justify-center">
-        <PostItem />
+    return <div className="flex flex-1 flex-col pt-16">
+        {
+            [...Array(5).keys()].map(_ => <PostItem />)
+        }
     </div>
 }
 

@@ -1,0 +1,7 @@
+.preview-container h1 *:hover,
+.preview-container h2 *:hover,
+.preview-container h3 *:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    transition: text-decoration 200ms ease;
+}

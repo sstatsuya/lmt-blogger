@@ -47,6 +47,10 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         Bài viết
       </div>
 
+      <div onClick={() => navigate(APP_ROUTE.CREATE_POST)} className={`cursor-pointer ${location.pathname === APP_ROUTE.CREATE_POST ? 'text-title' : 'text-white'} hover:text-title animate-transition`}>
+        Tạo bài viết
+      </div>
+
       <div onClick={() => navigate(APP_ROUTE.LOGIN)} className={`cursor-pointer  ${location.pathname === APP_ROUTE.LOGIN ? 'text-title' : 'text-white'} hover:text-title animate-transition`}>
         Đăng nhập
       </div>

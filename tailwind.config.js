@@ -76,6 +76,7 @@ module.exports = {
           transition: 'all 0.5s',
         }
       })
-    }
+    },
+    require('@tailwindcss/typography')
   ],
 }
