@@ -28,7 +28,10 @@
     "react": "^19.0.0",
     "react-color": "^2.19.3",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.2"
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.5.2",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

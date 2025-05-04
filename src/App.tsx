@@ -6,6 +6,9 @@ import Login from './pages/Login';
 import Post from './pages/Post';
 import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import AppProvider, { AppConsumer } from './AppProvider';
 
 export const APP_ROUTE = {
   HOME: '/',
@@ -17,15 +20,30 @@ export const APP_ROUTE = {
 
 const App = () => {
   return (
-    <MainLayout>
-      <Routes>
-        <Route path={APP_ROUTE.HOME} element={<HomePage />} />
-        <Route path={APP_ROUTE.LOGIN} element={<Login />} />
-        <Route path={APP_ROUTE.POST} element={<Post />} />
-        <Route path={APP_ROUTE.CREATE_POST} element={<CreatePost />} />
-        <Route path={APP_ROUTE.POST_DETAIL} element={<PostDetail />} />
-      </Routes>
-    </MainLayout>
+    <Provider store={store}>
+      <AppProvider>
+        <AppConsumer>
+          {(funcs: any) => {
+            (window as any).props = {
+              ...funcs,
+            };
+
+            return (
+              <MainLayout>
+                <Routes>
+                  <Route path={APP_ROUTE.HOME} element={<HomePage />} />
+                  <Route path={APP_ROUTE.LOGIN} element={<Login />} />
+                  <Route path={APP_ROUTE.POST} element={<Post />} />
+                  <Route path={APP_ROUTE.CREATE_POST} element={<CreatePost />} />
+                  <Route path={APP_ROUTE.POST_DETAIL} element={<PostDetail />} />
+                </Routes>
+              </MainLayout>
+            );
+          }}
+        </AppConsumer>
+      </AppProvider>
+
+    </Provider>
   );
 };
 

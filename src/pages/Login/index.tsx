@@ -5,6 +5,14 @@ const Login = () => {
 
     const navigation = useNavigate();
 
+    const onLogin = async () => {
+        try {
+            console.log('tien xem ne ', (window as any).props.showLoading())
+        } catch (error) {
+
+        }
+    }
+
     return <div className="bg-red-500 flex flex-col lg:flex-row flex-1">
         <div className="flex flex-1 bg-primary flex-center">
             <img src={IMAGES.MAN} className="w-[50%] lg:w-[80%] aspect-auto" />
@@ -27,7 +35,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className='w-full py-2 bg-title text-white font-semibold text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500'>
+                <div onClick={() => onLogin()} className='w-full py-2 bg-title text-white font-semibold text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500'>
                     Vào thôi!
                 </div>
 
