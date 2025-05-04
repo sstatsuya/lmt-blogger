@@ -13,75 +13,11 @@ import ListItem from '@tiptap/extension-list-item'
 import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
+import { addRandomIdsToHeadings } from '../../utils'
 
 Heading.configure({
     levels: [1, 2, 3],
 })
-
-const TAB_CHAR = "\u0009";
-
-const IndentHandler = Extension.create({
-    name: "indentHandler",
-    addKeyboardShortcuts() {
-        return {
-            Tab: ({ editor }) => {
-                const { selection } = editor.state;
-                const { $from } = selection;
-
-                // Check if we're at the start of a list item
-                if (editor.isActive("listItem") && $from.parentOffset === 0) {
-                    // Attempt to sink the list item
-                    const sinkResult = editor.chain().sinkListItem("listItem").run();
-
-                    // If sinking was successful, return true
-                    if (sinkResult) {
-                        return true;
-                    }
-                    // If sinking failed, we'll fall through to inserting a tab
-                }
-
-                // Insert a tab character
-                editor
-                    .chain()
-                    .command(({ tr }) => {
-                        tr.insertText(TAB_CHAR);
-                        return true;
-                    })
-                    .run();
-
-                // Prevent default behavior (losing focus)
-                return true;
-            },
-            "Shift-Tab": ({ editor }) => {
-                const { selection, doc } = editor.state;
-                const { $from } = selection;
-                const pos = $from.pos;
-
-                // Check if we're at the start of a list item
-                if (editor.isActive("listItem") && $from.parentOffset === 0) {
-                    // If so, lift the list item
-                    return editor.chain().liftListItem("listItem").run();
-                }
-
-                // Check if the previous character is a tab
-                if (doc.textBetween(pos - 1, pos) === TAB_CHAR) {
-                    // If so, delete it
-                    editor
-                        .chain()
-                        .command(({ tr }) => {
-                            tr.delete(pos - 1, pos);
-                            return true;
-                        })
-                        .run();
-                    return true;
-                }
-
-                // Prevent default behavior (losing focus)
-                return true;
-            },
-        };
-    },
-});
 
 const TEXT_PLACEHOLDER = 'Soạn nội dung tại đây...'
 const CreatePost = () => {
@@ -89,22 +25,68 @@ const CreatePost = () => {
         extensions: [StarterKit.configure({
             bulletList: false,
             orderedList: false,
-        }), TextStyle, Color, BulletList,
+        }), TextStyle.configure({
+            //@ts-ignore
+            types: ['textStyle'], // Đảm bảo extension này được thêm vào
+        }), Color, BulletList,
             OrderedList,
             ListItem,
         TextAlign.configure({
             types: ['heading', 'paragraph'], // Áp dụng align cho heading và paragraph
         }),
         Placeholder.configure({
-            placeholder: 'Write something...'
+            placeholder: TEXT_PLACEHOLDER
         }),
         Link.configure({
             openOnClick: false,
             linkOnPaste: true,
             autolink: true,
         }),
-            IndentHandler
+
         ],
+        editorProps: {
+            handleKeyDown(view, event) {
+                if (event.key === 'Tab') {
+                    event.preventDefault()
+
+                    const { state, dispatch } = view
+                    const { selection } = state
+                    const { from, to, $from } = selection
+
+                    const lineStart = $from.start()
+
+                    // Chèn 2 khoảng trắng ở đầu dòng
+                    const tr = state.tr.insertText('  ', lineStart)
+
+                    // Tính toán lại vùng chọn sau khi đã chèn
+                    const offset = 2 // số ký tự đã chèn
+                    const newFrom = from + (from > lineStart ? offset : 0)
+                    const newTo = to + (to > lineStart ? offset : 0)
+
+                    tr.setSelection(
+                        state.selection.constructor.create(tr.doc, newFrom, newTo)
+                    )
+
+                    dispatch(tr)
+                    return true
+                }
+
+                return false
+            },
+            handlePaste: (view, event) => {
+                const clipboardData = event.clipboardData
+                if (clipboardData) {
+                    // Làm một việc gì đó với dữ liệu clipboard trước khi dán
+                    const plainText = clipboardData.getData('text/plain')
+                    const htmlText = clipboardData.getData('text/html')
+
+                    // Giữ nguyên màu sắc khi dán nội dung
+                    view.dispatch(view.state.tr.insertText(plainText, view.state.selection.from))
+                    return true
+                }
+                return false
+            },
+        },
     })
     const [showColorPicker, setShowColorPicker] = useState(false)
     const [color, setColor] = useState('#ffffff')
@@ -141,7 +123,6 @@ const CreatePost = () => {
     const handleColorChange = (newColor: any) => {
         setColor(newColor.hex)
         if (editor) {
-            console.log('vao ne ', newColor)
             editor.chain().focus().setColor(newColor.hex).run()
         }
     }
@@ -311,7 +292,7 @@ const CreatePost = () => {
 
     const onSubmit = () => {
         if (!editor) return alert('Đã có lỗi xảy ra')
-        const htmlContent = editor.getHTML()
+        const htmlContent = addRandomIdsToHeadings(editor.getHTML())
         console.log(htmlContent)
 
         navigator.clipboard.writeText(htmlContent)
@@ -341,6 +322,7 @@ const CreatePost = () => {
     }
 
     const renderPreview = () => {
+        console.log('tien xem preview ', editor?.getHTML())
         if (!isPreview) return null;
         if (!editor) return null;
         return <div

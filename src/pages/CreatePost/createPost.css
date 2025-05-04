@@ -1,7 +1,10 @@
 .preview-container h1 *:hover,
 .preview-container h2 *:hover,
 .preview-container h3 *:hover {
-    cursor: pointer;
-    text-decoration: underline;
-    transition: text-decoration 200ms ease;
+    /* text-decoration: underline; */
+    /* transition: text-decoration 200ms ease; */
 }
+
+.preview-container p:empty {
+    min-height: 28px; /* Hoặc bất kỳ giá trị height bạn muốn cho 1 thẻ <p> bình thường */
+  }

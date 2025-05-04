@@ -10,7 +10,7 @@ interface TOCItem {
 const generateId = (text: string) =>
     text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
 
-const TitleList = ({ html }: { html: string }) => {
+const TitleList = ({ html, scrollToHeading }: { html: string, scrollToHeading: any }) => {
     const [headings, setHeadings] = useState<TOCItem[]>([]);
 
     useEffect(() => {
@@ -26,17 +26,17 @@ const TitleList = ({ html }: { html: string }) => {
             if (!text) return; // ⛔ Bỏ qua nếu trống
 
             const level = parseInt(el.tagName[1]); // 1, 2, 3
-            const id = generateId(text);
 
-            el.setAttribute('id', id);
-            found.push({ level, text, id });
+            // Lấy id hiện tại nếu có, nếu không thì bỏ qua
+            const existingId = el.id || generateId(text); // Nếu đã có id thì dùng, không có thì sinh id mới
+
+            found.push({ level, text, id: existingId });
         });
 
         setHeadings(found);
     }, [html]);
-
     return (
-        <div className="">
+        <div className="sticky left-0 right-0" style={{top: '80px'}}>
             {headings.map((item, index) => (
                 <div
                     key={index}
@@ -44,9 +44,8 @@ const TitleList = ({ html }: { html: string }) => {
                     style={{ marginLeft: `${(item.level - 1) * 16}px` }} // thụt theo cấp
                     onClick={() => {
                         const el = document.getElementById(item.id);
-                        if (el) {
-                            el.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        console.log('tien xem el ', item.id)
+                        scrollToHeading(item.id)
                     }}
                 >
                     <p className='text-white text-base mb-0'>{item.text}</p>

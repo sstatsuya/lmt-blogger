@@ -34,7 +34,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     return <div className='flex-between gap-8'>
 
 
-      <div className='hover:bg-hover group transition-all duration-200 ease-in-out cursor-pointer min-w-48 flex-between px-2 py-1.5 border-1 border-border rounded-md'>
+      <div className='hidden sm:flex min-w-48 hover:bg-hover group transition-all duration-200 ease-in-out cursor-pointer flex-between px-2 py-1.5 border-1 border-border rounded-md'>
         <p className='text-plhd text-sm pl-2 group-hover:text-white transition-all ease-in-out duration-200'>Search...</p>
         <div className='bg-highlight flex-center text-xs rounded-sm p-0.5 group-hover:bg-transparent group-hover:text-white duration-200 transition-all ease-in-out'>
           ⌘K
