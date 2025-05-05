@@ -64,6 +64,7 @@ const CreatePost = () => {
                     const newTo = to + (to > lineStart ? offset : 0)
 
                     tr.setSelection(
+                        //@ts-ignore
                         state.selection.constructor.create(tr.doc, newFrom, newTo)
                     )
 
@@ -331,7 +332,7 @@ const CreatePost = () => {
         />
     }
 
-    return <div className="flex flex-1 flex-col pt-16 ">
+    return <div className="flex flex-1 flex-col pt-16">
         {renderTitle()}
         {renderRichText()}
         {renderSubmit()}

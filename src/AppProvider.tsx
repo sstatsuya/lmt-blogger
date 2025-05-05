@@ -1,5 +1,6 @@
-import React, { Component, createContext, ReactNode } from 'react';
-import { Loading } from './components';
+import React, { Component, createContext, ReactNode } from "react";
+import { Loading } from "./components";
+import { ToastContainer, toast } from "react-toastify";
 
 interface IContextProps {
   showLoading: () => void;
@@ -42,7 +43,8 @@ export default class AppProvider extends Component<IProps, IState> {
     };
     return (
       <MyContext.Provider value={{ ...func }}>
-        <div className='flex flex-1'>
+        <ToastContainer />
+        <div className="flex flex-1">
           {this.props.children}
           {this.state.isLoading && <Loading />}
         </div>

@@ -23,7 +23,6 @@ export const fetchAPI = async ({
       let res: any;
       const token = localStorage.getItem(KEYS.TOKEN) || '';
       const uploadKey = localStorage.getItem(KEYS.UPLOAD_KEY) || '';
-      console.log('tien xem uploadKey ', uploadKey);
       headers.set('authorization', token);
 
       if (isUpload) {

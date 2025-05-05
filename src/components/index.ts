@@ -1,5 +1,3 @@
 import Loading from "./Loading";
-
-export {
-    Loading
-}
+import Spinner from "./Spinner";
+export { Loading, Spinner };
