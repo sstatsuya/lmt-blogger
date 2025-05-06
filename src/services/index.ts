@@ -1,4 +1,4 @@
-import { GET_USER_INFO, LOGIN } from "../constant/api";
+import { GET_USER_INFO, LOGIN, LOGOUT } from "../constant/api";
 import { fetchAPI } from "../utils/ApiBase";
 import { IError, MESSAGE } from "./types";
 
@@ -42,6 +42,26 @@ export const getUserInfoService = async (token: string) => {
         url: GET_USER_INFO,
         data: {
           token: token,
+        },
+      });
+      return resolve(response);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const logoutService = async (token: string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response: any = await fetchAPI({
+        url: LOGOUT,
+        data: {
+          token,
         },
       });
       return resolve(response);

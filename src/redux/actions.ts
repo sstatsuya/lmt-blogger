@@ -1,4 +1,9 @@
-import { getUserInfoService, ILoginRequest, loginService } from "../services";
+import {
+  getUserInfoService,
+  ILoginRequest,
+  loginService,
+  logoutService,
+} from "../services";
 import { IUserInfo } from "../services/types";
 import { KEYS } from "../storage";
 import { initProfile } from "./profileReducer";
@@ -44,6 +49,25 @@ export const getUserInfo = (response?: IUserInfo) => {
       } catch (error) {
         console.log("error in action getUserInfo", error);
         reject(error);
+      }
+    });
+  };
+};
+
+export const logoutAction = () => {
+  return (dispatch: any) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const token = localStorage.getItem(KEYS.TOKEN) || "";
+        const response = await logoutService(token);
+        resolve(response);
+      } catch (error) {
+        console.log("error in action logout", error);
+        reject(error);
+      } finally {
+        localStorage.setItem(KEYS.TOKEN, "");
+        localStorage.setItem(KEYS.UPLOAD_KEY, "");
+        dispatch({ type: LOGOUT });
       }
     });
   };

@@ -1,25 +1,31 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IMAGES } from "../../assets";
 import { IUserInfo } from "../../services/types";
 import { useDispatch } from "react-redux";
 import * as actions from "../../redux/actions";
 import { useState } from "react";
 import { Toast } from "../../utils";
+import { Eye, EyeOff } from "lucide-react";
+import { APP_ROUTE } from "../../App";
 
 const Login = () => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo;
   const dispatch: any = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isShowPassword, setShowPassword] = useState(false);
   const onLogin = async () => {
     try {
       (window as any).props.showLoading();
       const userInfo: IUserInfo = await dispatch(
         actions.login({ username, password })
       );
-      console.log("tien xem userinfo ", userInfo);
+      if (redirectTo) navigate(redirectTo);
+      else navigate(APP_ROUTE.HOME);
     } catch (error: any) {
-      Toast.show({ text:  error.message});
+      Toast.show({ text: error.message });
       console.log("tien xem error ", error.message);
     } finally {
       (window as any).props.hideLoading();
@@ -49,8 +55,25 @@ const Login = () => {
               />
             </div>
             <div className="w-full p-2 border-1 border-border border-l-4 border-l-title">
-              <p className="text-sm text-gray-400">Mật khẩu</p>
+              <div className="w-full flex items-center">
+                <p className="text-sm text-gray-400">Mật khẩu</p>
+                {!isShowPassword && (
+                  <Eye
+                    onClick={() => setShowPassword((p) => !p)}
+                    size={18}
+                    className="text-white ml-2 cursor-pointer"
+                  />
+                )}
+                {isShowPassword && (
+                  <EyeOff
+                    onClick={() => setShowPassword((p) => !p)}
+                    size={18}
+                    className="text-white ml-2 cursor-pointer"
+                  />
+                )}
+              </div>
               <input
+                type={isShowPassword ? "text" : "password"}
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
@@ -67,7 +90,7 @@ const Login = () => {
           </div>
 
           <div
-            onClick={() => navigation("/")}
+            onClick={() => navigate("/")}
             className="text-sm w-full py-2  text-white underline text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500"
           >
             Trở về

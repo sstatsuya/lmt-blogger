@@ -25,6 +25,19 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      (window as any).props.showLoading();
+      setVerifying(true);
+      await dispatch(actions.logoutAction());
+      navigate(APP_ROUTE.HOME);
+    } catch (error) {
+    } finally {
+      (window as any).props.hideLoading();
+      setVerifying(false);
+    }
+  };
+
   // Làm thanh scroll ngang
   useEffect(() => {
     // Lấy thông tin user
@@ -62,7 +75,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       return (
         <div
           onClick={() => navigate(APP_ROUTE.LOGIN)}
-          className={`  ${
+          className={`cursor-pointer  ${
             location.pathname === APP_ROUTE.LOGIN ? "text-title" : "text-white"
           } hover:text-title animate-transition`}
         >
@@ -71,15 +84,19 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       );
     else
       return (
-        <div
-          className={`${
-            location.pathname === APP_ROUTE.LOGIN ? "text-title" : "text-white"
-          } `}
-        >
-          {"Xin chào"}
-          <span className="text-title font-bold text-lg ml-2">
-            {profile.fullname}
-          </span>
+        <div className="flex flex-center gap-8">
+          <div className={`text-white`}>
+            {"Xin chào"}
+            <span className="text-title font-bold text-lg ml-2">
+              {profile.fullname}
+            </span>
+          </div>
+          <div
+            onClick={() => handleLogout()}
+            className={`cursor-pointer text-white hover:text-title animate-transition`}
+          >
+            Đăng xuất
+          </div>
         </div>
       );
   };
@@ -92,6 +109,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         </a>
       </div>
     );
+  };
+
+  const handleGoToCreatePost = () => {
+    if (!profile.id) {
+      Toast.show({ text: "Bạn cần đăng nhập trước" });
+      navigate(APP_ROUTE.LOGIN, {
+        state: {
+          redirectTo: APP_ROUTE.CREATE_POST,
+        },
+      });
+    } else navigate(APP_ROUTE.CREATE_POST);
   };
 
   const renderUtilities = () => {
@@ -116,7 +144,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         <div
-          onClick={() => navigate(APP_ROUTE.CREATE_POST)}
+          onClick={() => handleGoToCreatePost()}
           className={`cursor-pointer ${
             location.pathname === APP_ROUTE.CREATE_POST
               ? "text-title"
@@ -151,7 +179,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <div className={"flex flex-col w-full"}>
       <div
         className={`flex flex-col min-h-screen relative ${
-          isSignInPage ? "" : "xl:px-[20%] px-[5%]"
+          isSignInPage ? "" : "xl:px-[10%] px-[5%]"
         }`}
       >
         {!isSignInPage && (
@@ -188,7 +216,7 @@ import { IUserInfo } from "../services/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReducerType } from "../redux/store";
 import { Spinner } from "../components";
-import { Colors } from "../utils";
+import { Colors, Toast } from "../utils";
 
 const UtilityBtn = ({ icon }: { icon: any }) => {
   return (
