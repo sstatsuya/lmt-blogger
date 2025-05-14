@@ -1,3 +1,7 @@
+//@ts-ignore
+import NProgress from "nprogress";
+import "nprogress/nprogress.css"; // Import CSS của NProgress
+
 export const generateRandomId = () => {
   return "heading-" + Math.random().toString(36).substr(2, 9); // tạo id ngẫu nhiên
 };
@@ -25,3 +29,15 @@ export const addRandomIdsToHeadings = (html: string) => {
 import * as Toast from "./Toast";
 export { Toast };
 export * from "./styles";
+
+// Hàm bắt đầu thanh progress
+export const startPageProgress = (): void => {
+  NProgress.start();
+};
+
+// Hàm dừng thanh progress
+export const stopPageProgress = (): void => {
+  NProgress.done();
+};
+
+export const configurePageProgress = (): void => {};

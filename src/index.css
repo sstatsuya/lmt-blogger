@@ -42,3 +42,13 @@
 .Toastify__progress-bar--success {
   background: rgb(117, 3, 183);
 }
+
+.preview-container ol li::marker,
+.ProseMirror li::marker {
+  color: white;
+}
+
+#nprogress .bar {
+  background: rgb(117, 3, 183) !important; /* Màu xanh lá */
+  height: 4px !important;
+}

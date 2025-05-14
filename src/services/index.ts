@@ -1,6 +1,14 @@
-import { GET_USER_INFO, LOGIN, LOGOUT } from "../constant/api";
+import {
+  CREATE_POST,
+  GET_ALL_POST,
+  GET_POST_BY_ID,
+  GET_USER_INFO,
+  LOGIN,
+  LOGOUT,
+} from "../constant/api";
 import { fetchAPI } from "../utils/ApiBase";
-import { IError, MESSAGE } from "./types";
+import { formatPost, formatPosts } from "./adapter";
+import { IError, IPost, MESSAGE } from "./types";
 
 type TypeUserRole = "member" | "admin";
 export interface ILoginRequest {
@@ -35,14 +43,11 @@ export const loginService = async (inputRequest: ILoginRequest) => {
   });
 };
 
-export const getUserInfoService = async (token: string) => {
+export const getUserInfoService = async () => {
   return new Promise<ILoginResponse>(async (resolve, reject) => {
     try {
       const response: any = await fetchAPI({
         url: GET_USER_INFO,
-        data: {
-          token: token,
-        },
       });
       return resolve(response);
     } catch (error: any) {
@@ -55,16 +60,90 @@ export const getUserInfoService = async (token: string) => {
   });
 };
 
-export const logoutService = async (token: string) => {
+export const logoutService = async () => {
   return new Promise(async (resolve, reject) => {
     try {
       const response: any = await fetchAPI({
         url: LOGOUT,
-        data: {
-          token,
-        },
       });
       return resolve(response);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const getPosts = async ({
+  pageSize = 10,
+  offset = 0,
+}: {
+  pageSize: number;
+  offset: number;
+}) => {
+  return new Promise<IPost[]>(async (resolve, reject) => {
+    try {
+      const response: any = await fetchAPI({
+        url: GET_ALL_POST,
+        data: {
+          pageSize,
+          offset,
+        },
+      });
+      console.log("tien xem response getPosts", response);
+      const data = formatPosts(response);
+      return resolve(data);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const getPostById = async (id: string) => {
+  return new Promise<IPost>(async (resolve, reject) => {
+    try {
+      const response: any = await fetchAPI({
+        method: "GET",
+        url: `${GET_POST_BY_ID}/${id}`,
+      });
+      const data = formatPost(response);
+      return resolve(data);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const createPost = async ({
+  title,
+  content,
+}: {
+  title: string;
+  content: string;
+}) => {
+  return new Promise<IPost>(async (resolve, reject) => {
+    try {
+      const response: any = await fetchAPI({
+        url: CREATE_POST,
+        data: {
+          title,
+          content,
+        },
+      });
+      console.log("tien xem response createPost", response);
+      const data = formatPost(response);
+      return resolve(data);
     } catch (error: any) {
       const myError: IError = {
         isError: true,

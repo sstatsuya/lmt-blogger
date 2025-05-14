@@ -38,7 +38,7 @@ export const getUserInfo = (response?: IUserInfo) => {
         if (!response) {
           const token = localStorage.getItem(KEYS.TOKEN);
           if (!token) return resolve(initProfile);
-          response = await getUserInfoService(token);
+          response = await getUserInfoService();
           localStorage.setItem(KEYS.UPLOAD_KEY, response.uploadKey);
         } else {
           localStorage.setItem(KEYS.TOKEN, response.token);
@@ -58,8 +58,7 @@ export const logoutAction = () => {
   return (dispatch: any) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const token = localStorage.getItem(KEYS.TOKEN) || "";
-        const response = await logoutService(token);
+        const response = await logoutService();
         resolve(response);
       } catch (error) {
         console.log("error in action logout", error);

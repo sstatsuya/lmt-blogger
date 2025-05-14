@@ -1,3 +1,4 @@
 import Loading from "./Loading";
 import Spinner from "./Spinner";
-export { Loading, Spinner };
+import ConfirmModal from "./ConfirmModal";
+export { Loading, Spinner, ConfirmModal };

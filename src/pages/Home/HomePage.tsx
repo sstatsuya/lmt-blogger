@@ -54,7 +54,7 @@ const HomePage = () => {
 
             <div className='flex-center mt-6 gap-4'>
                 <div className='text-center w-32 cursor-pointer  py-2 border-1 border-border rounded-lg bg-title hover:scale-105 transition-transform duration-200'>
-                    <span className='text-black'>Liên hệ</span>
+                    <span className='text-white'>Liên hệ</span>
                 </div>
 
                 <div className='text-center w-32 group cursor-pointer  py-2 border-1 border-border rounded-lg bg-transparent hover:scale-105 hover:bg-title transition-all duration-500'>

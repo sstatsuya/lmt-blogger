@@ -14,13 +14,13 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   const verifyUser = async () => {
     try {
-      (window as any).props.showLoading();
+      // (window as any).props.showLoading();
       setVerifying(true);
       const userInfo: IUserInfo = await dispatch(actions.getUserInfo());
       console.log("tien xem userInfo ", userInfo);
     } catch (error) {
     } finally {
-      (window as any).props.hideLoading();
+      // (window as any).props.hideLoading();
       setVerifying(false);
     }
   };
@@ -40,6 +40,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   // Làm thanh scroll ngang
   useEffect(() => {
+    startPageProgress(); // Bắt đầu thanh progress khi trang tải
+    window.addEventListener("load", stopPageProgress); // Dừng thanh progress khi trang đã tải xong
+
     // Lấy thông tin user
     verifyUser();
 
@@ -57,7 +60,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("load", stopPageProgress);
+    };
   }, []);
 
   const renderLoginBtn = () => {
@@ -216,7 +223,7 @@ import { IUserInfo } from "../services/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReducerType } from "../redux/store";
 import { Spinner } from "../components";
-import { Colors, Toast } from "../utils";
+import { Colors, startPageProgress, stopPageProgress, Toast } from "../utils";
 
 const UtilityBtn = ({ icon }: { icon: any }) => {
   return (
