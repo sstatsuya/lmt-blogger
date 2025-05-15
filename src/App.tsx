@@ -10,7 +10,7 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import AppProvider, { AppConsumer } from "./AppProvider";
 
-//build
+//build nek
 
 export const APP_ROUTE = {
   HOME: "/",
