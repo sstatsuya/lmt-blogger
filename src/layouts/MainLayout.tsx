@@ -15,7 +15,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     try {
       // (window as any).props.showLoading();
       setVerifying(true);
-      const userInfo: IUserInfo = await dispatch(actions.getUserInfo());
+      await dispatch(actions.getUserInfo());
     } catch (error) {
     } finally {
       // (window as any).props.hideLoading();
@@ -215,13 +215,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
 export default MainLayout;
 
-import { GithubOutlined, MoonOutlined } from "@ant-design/icons";
+import { MoonOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { APP_ROUTE } from "../App";
-import { IUserInfo } from "../services/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReducerType } from "../redux/store";
-import { Spinner } from "../components";
 import {
   Colors,
   configurePageProgress,

@@ -1,4 +1,4 @@
-import { EditorContent, Extension, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
@@ -507,7 +507,7 @@ const CreatePost = () => {
   const handlePost = async (title: string, content: string) => {
     try {
       (window as any).props.showLoading();
-      const res = await createPost({ title, content });
+      await createPost({ title, content });
       Toast.show({ text: "Tạo bài viết thành công" });
     } catch (error: any) {
       Toast.show({ text: "Tạo bài viết thất bại: " + error.message });

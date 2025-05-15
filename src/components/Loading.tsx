@@ -1,14 +1,7 @@
-import { useLottie } from "lottie-react";
 import { ANIMATIONS } from "../assets";
 import Lottie from "lottie-react";
 
-const options = {
-  animationData: ANIMATIONS.LOADING,
-  loop: true,
-};
-
 const Loading = () => {
-  const { View } = useLottie(options);
   return (
     <div
       style={{ zIndex: 1000 }}

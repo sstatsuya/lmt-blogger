@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { IMAGES } from "../../assets";
-import { IUserInfo } from "../../services/types";
 import { useDispatch } from "react-redux";
 import * as actions from "../../redux/actions";
 import { useState } from "react";
@@ -19,7 +18,7 @@ const Login = () => {
   const onLogin = async () => {
     try {
       (window as any).props.showLoading();
-      const userInfo: IUserInfo = await dispatch(
+      await dispatch(
         actions.login({ username, password })
       );
       if (redirectTo) navigate(redirectTo);

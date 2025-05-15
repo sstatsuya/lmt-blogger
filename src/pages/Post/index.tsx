@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import { ANIMATIONS, IMAGES } from "../../assets";
+import { ANIMATIONS } from "../../assets";
 import PostItem from "./PostItem";
 import { useEffect, useState } from "react";
 import { IError, initError, IPost } from "../../services/types";

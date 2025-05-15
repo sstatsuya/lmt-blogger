@@ -1,5 +1,5 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ANIMATIONS, IMAGES } from "../../assets";
+import { useParams } from "react-router-dom";
+import { ANIMATIONS } from "../../assets";
 import TitleList from "./TitleList";
 import { IError, initError, initPost, IPost } from "../../services/types";
 import { useEffect, useState } from "react";

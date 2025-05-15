@@ -1,6 +1,6 @@
-import React, { Component, createContext, ReactNode } from "react";
+import { Component, createContext, ReactNode } from "react";
 import { ConfirmModal, Loading } from "./components";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 interface IContextProps {
   showLoading: () => void;

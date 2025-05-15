@@ -1,5 +1,4 @@
 import { CSSProperties } from "react";
-import { Colors } from "../utils";
 
 const MyButton = ({
   text,
