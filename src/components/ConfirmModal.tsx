@@ -1,23 +1,31 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import MyButton from "./MyButton";
 
 interface ConfirmModalProps {
   onClose: () => void;
   content: string;
+  onConfirm: any;
 }
 
-const ConfirmModal = ({ onClose, content }: ConfirmModalProps) => {
+const ANIMATE_DURATION = 300;
+
+const ConfirmModal = ({ onClose, content, onConfirm }: ConfirmModalProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleClose = () => {
     setIsVisible(false); // bắt đầu zoomOut
+    // onClose();
+    setTimeout(() => {
+      onClose();
+    }, ANIMATE_DURATION * 0.5);
   };
 
   useEffect(() => {
     if (!isVisible) {
       const timer = setTimeout(() => {
         onClose(); // đợi animation xong mới gọi onClose từ cha
-      }, 300); // khớp với duration trong transition
+      }, ANIMATE_DURATION); // khớp với duration trong transition
 
       return () => clearTimeout(timer);
     }
@@ -40,7 +48,18 @@ const ConfirmModal = ({ onClose, content }: ConfirmModalProps) => {
         >
           ×
         </button>
-        <p className="text-white" >{content}</p>
+        <p className="text-white">{content}</p>
+
+        <div className="flex flex-center gap-8 mt-4">
+          <MyButton
+            text={"Đồng ý"}
+            onClick={() => {
+              onConfirm();
+              handleClose();
+            }}
+          />
+          <MyButton text={"Huỷ"} outline onClick={() => handleClose()} />
+        </div>
       </motion.div>
     </div>
   );

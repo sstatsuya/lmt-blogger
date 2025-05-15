@@ -17,6 +17,7 @@ interface IState {
   isLoading: boolean;
   isShowConfirmModal: boolean;
   confirmModalContent: string;
+  confirmModalOnConfirm: any;
 }
 export default class AppProvider extends Component<IProps, IState> {
   constructor(props: any) {
@@ -25,6 +26,7 @@ export default class AppProvider extends Component<IProps, IState> {
       isLoading: false,
       isShowConfirmModal: false,
       confirmModalContent: "",
+      confirmModalOnConfirm: () => {},
     };
   }
 
@@ -40,10 +42,17 @@ export default class AppProvider extends Component<IProps, IState> {
     });
   };
 
-  showConfirmModal = (content: string) => {
+  showConfirmModal = ({
+    content,
+    onClick,
+  }: {
+    content: string;
+    onClick: any;
+  }) => {
     this.setState({
       isShowConfirmModal: true,
       confirmModalContent: content,
+      confirmModalOnConfirm: onClick,
     });
   };
 
@@ -67,6 +76,7 @@ export default class AppProvider extends Component<IProps, IState> {
         {this.state.isShowConfirmModal && (
           <ConfirmModal
             content={this.state.confirmModalContent}
+            onConfirm={this.state.confirmModalOnConfirm}
             onClose={() => this.hideConfirmModal()}
           />
         )}

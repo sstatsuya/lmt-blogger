@@ -44,50 +44,57 @@ const Login = () => {
             Lưu ý chỉ có LMT mới đăng nhập được nha!
           </p>
 
-          <div className="mt-6">
-            <div className="w-full p-2 border-1 border-border border-l-4 border-l-title">
-              <p className="text-sm text-gray-400">Tên đăng nhập</p>
-              <input
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-                className="text-sm w-full bg-transparent mt-0 outline-none border-b border-border text-white"
-              />
-            </div>
-            <div className="w-full p-2 border-1 border-border border-l-4 border-l-title">
-              <div className="w-full flex items-center">
-                <p className="text-sm text-gray-400">Mật khẩu</p>
-                {!isShowPassword && (
-                  <Eye
-                    onClick={() => setShowPassword((p) => !p)}
-                    size={18}
-                    className="text-white ml-2 cursor-pointer"
-                  />
-                )}
-                {isShowPassword && (
-                  <EyeOff
-                    onClick={() => setShowPassword((p) => !p)}
-                    size={18}
-                    className="text-white ml-2 cursor-pointer"
-                  />
-                )}
-              </div>
-              <input
-                type={isShowPassword ? "text" : "password"}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                className="text-sm w-full bg-transparent mt-0 outline-none border-b border-border text-white"
-              />
-            </div>
-          </div>
-
-          <div
-            onClick={() => onLogin()}
-            className="w-full py-2 bg-title text-white font-semibold text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500"
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+            }}
           >
-            Vào thôi!
-          </div>
+            <div className="mt-6">
+              <div className="w-full p-2 border-1 border-border border-l-4 border-l-title">
+                <p className="text-sm text-gray-400">Tên đăng nhập</p>
+                <input
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                  className="text-sm w-full bg-transparent mt-0 outline-none border-b border-border text-white"
+                />
+              </div>
+              <div className="w-full p-2 border-1 border-border border-l-4 border-l-title">
+                <div className="w-full flex items-center">
+                  <p className="text-sm text-gray-400">Mật khẩu</p>
+                  {!isShowPassword && (
+                    <Eye
+                      onClick={() => setShowPassword((p) => !p)}
+                      size={18}
+                      className="text-white ml-2 cursor-pointer"
+                    />
+                  )}
+                  {isShowPassword && (
+                    <EyeOff
+                      onClick={() => setShowPassword((p) => !p)}
+                      size={18}
+                      className="text-white ml-2 cursor-pointer"
+                    />
+                  )}
+                </div>
+                <input
+                  type={isShowPassword ? "text" : "password"}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  className="text-sm w-full bg-transparent mt-0 outline-none border-b border-border text-white"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              onClick={() => onLogin()}
+              className="w-full py-2 bg-title text-white font-semibold text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500"
+            >
+              Vào thôi!
+            </button>
+          </form>
 
           <div
             onClick={() => navigate("/")}

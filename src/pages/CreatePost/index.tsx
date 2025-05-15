@@ -30,9 +30,10 @@ import ListItem from "@tiptap/extension-list-item";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
-import { addRandomIdsToHeadings } from "../../utils";
+import { addRandomIdsToHeadings, Toast } from "../../utils";
 import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
+import { createPost } from "../../services";
 
 Heading.configure({
   levels: [1, 2, 3],
@@ -154,6 +155,7 @@ const CreatePost = () => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isPreview, setIsPreview] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [title, setTitle] = useState("");
 
   // Hàm này sẽ đóng bảng màu khi người dùng click ra ngoài
   const handleClickOutside = (event: MouseEvent) => {
@@ -213,6 +215,8 @@ const CreatePost = () => {
     return (
       <div className="w-full">
         <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="Tiêu đề"
           className="text-base w-full outline-offset-0 mt-1 px-2 text-white h-12 border-1 border-dim-border focus:border-gray-500 focus:outline focus:outline-gray-300 focus:outline-1 outline-none rounded-lg bg-gray-700"
         />
@@ -476,21 +480,44 @@ const CreatePost = () => {
     );
   };
 
+  const validate = (content: string) => {
+    console.log("tien xem content ", content);
+    if (title.trim().length < 1) {
+      Toast.show({ text: "Vui lòng nhập tiêu đề" });
+      return false;
+    } else if (content.length < 1) {
+      Toast.show({ text: "Vui lòng nhập nội dung" });
+      return false;
+    }
+    return true;
+  };
+
+  const handlePost = async (title: string, content: string) => {
+    try {
+      (window as any).props.showLoading();
+      const res = await createPost({ title, content });
+      console.log("tien xem res ", res);
+      Toast.show({ text: "Tạo bài viết thành công" });
+    } catch (error: any) {
+      Toast.show({ text: "Tạo bài viết thất bại: " + error.message });
+    } finally {
+      (window as any).props.hideLoading();
+    }
+  };
+
   const onSubmit = () => {
-    (window as any).props.showConfirmModal('Bạn có chắc chắn muốn xuất bản bài viết luôn không?');
-
-    if (!editor) return alert("Đã có lỗi xảy ra");
+    if (!editor) return;
     const htmlContent = addRandomIdsToHeadings(editor.getHTML());
-    console.log(htmlContent);
+    const content = editor.getText();
+    const validateRes = validate(content);
+    if (!validateRes) return;
 
-    navigator.clipboard
-      .writeText(htmlContent)
-      .then(() => {
-        console.log("Copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
-      });
+    (window as any).props.showConfirmModal({
+      content: "Bạn có chắc chắn muốn xuất bản bài viết luôn không?",
+      onClick: () => {
+        handlePost(title, htmlContent);
+      },
+    });
   };
 
   const renderSubmit = () => {

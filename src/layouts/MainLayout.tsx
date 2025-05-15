@@ -40,6 +40,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   // Làm thanh scroll ngang
   useEffect(() => {
+    configurePageProgress();
     startPageProgress(); // Bắt đầu thanh progress khi trang tải
     window.addEventListener("load", stopPageProgress); // Dừng thanh progress khi trang đã tải xong
 
@@ -223,7 +224,13 @@ import { IUserInfo } from "../services/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReducerType } from "../redux/store";
 import { Spinner } from "../components";
-import { Colors, startPageProgress, stopPageProgress, Toast } from "../utils";
+import {
+  Colors,
+  configurePageProgress,
+  startPageProgress,
+  stopPageProgress,
+  Toast,
+} from "../utils";
 
 const UtilityBtn = ({ icon }: { icon: any }) => {
   return (

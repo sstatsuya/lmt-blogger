@@ -1,4 +1,5 @@
 import Loading from "./Loading";
 import Spinner from "./Spinner";
 import ConfirmModal from "./ConfirmModal";
-export { Loading, Spinner, ConfirmModal };
+import MyButton from "./MyButton";
+export { Loading, Spinner, ConfirmModal, MyButton };

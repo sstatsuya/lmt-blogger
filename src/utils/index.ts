@@ -40,4 +40,6 @@ export const stopPageProgress = (): void => {
   NProgress.done();
 };
 
-export const configurePageProgress = (): void => {};
+export const configurePageProgress = (): void => {
+  NProgress.configure({ showSpinner: false });
+};
