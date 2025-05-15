@@ -31,6 +31,17 @@
   margin-bottom: 0 !important;
 }
 
+.prose ul,
+.prose ol {
+  margin-top: 0em !important;
+}
+
+.prose li {
+  margin-top: 0em !important;
+  margin-bottom: 0em !important;
+}
+
+
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);

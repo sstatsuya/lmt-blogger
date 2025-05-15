@@ -93,7 +93,6 @@ export const getPosts = async ({
           offset,
         },
       });
-      console.log("tien xem response getPosts", response);
       const data = formatPosts(response);
       return resolve(data);
     } catch (error: any) {
@@ -141,7 +140,6 @@ export const createPost = async ({
           content,
         },
       });
-      console.log("tien xem response createPost", response);
       const data = formatPost(response);
       return resolve(data);
     } catch (error: any) {

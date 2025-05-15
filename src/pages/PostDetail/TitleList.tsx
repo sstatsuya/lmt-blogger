@@ -43,8 +43,6 @@ const TitleList = ({ html, scrollToHeading }: { html: string, scrollToHeading: a
                     className={`cursor-pointer hover:underline mb-4`}
                     style={{ marginLeft: `${(item.level - 1) * 16}px` }} // thụt theo cấp
                     onClick={() => {
-                        const el = document.getElementById(item.id);
-                        console.log('tien xem el ', item.id)
                         scrollToHeading(item.id)
                     }}
                 >

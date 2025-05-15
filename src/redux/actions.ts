@@ -34,7 +34,6 @@ export const getUserInfo = (response?: IUserInfo) => {
   return (dispatch: any) => {
     return new Promise<IUserInfo>(async (resolve, reject) => {
       try {
-        console.log("tien xem response getUserInfo", response);
         if (!response) {
           const token = localStorage.getItem(KEYS.TOKEN);
           if (!token) return resolve(initProfile);

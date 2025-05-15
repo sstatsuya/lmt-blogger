@@ -9,7 +9,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const dispatch: any = useDispatch();
   const profile = useSelector((state: RootReducerType) => state.profileReducer);
-  console.log("tien xem profile ", profile);
   const [isVerifying, setVerifying] = useState(false);
 
   const verifyUser = async () => {
@@ -17,7 +16,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       // (window as any).props.showLoading();
       setVerifying(true);
       const userInfo: IUserInfo = await dispatch(actions.getUserInfo());
-      console.log("tien xem userInfo ", userInfo);
     } catch (error) {
     } finally {
       // (window as any).props.hideLoading();

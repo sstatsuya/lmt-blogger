@@ -13,7 +13,7 @@ const PostItem = ({ post }: { post: IPost }) => {
   return (
     <div className="w-full flex gap-4 border-b-1 border-b-gray-500 pb-4 mb-4">
       <div>
-        <img src={post.author.avatar} className="w-12 h-12 rounded-full" />
+        <img onError={(e) => console.log('tien xem e ', e)} src={post.author.avatar} className="w-12 h-12 rounded-full" referrerPolicy="no-referrer" />
       </div>
       <div>
         <div className="cursor-pointer w-full flex">
