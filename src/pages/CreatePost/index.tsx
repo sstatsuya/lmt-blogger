@@ -33,7 +33,7 @@ import Link from "@tiptap/extension-link";
 import { addRandomIdsToHeadings, Toast } from "../../utils";
 import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
-import { createPost } from "../../services";
+import { createPost, uploadImageService } from "../../services";
 
 Heading.configure({
   levels: [1, 2, 3],
@@ -104,8 +104,8 @@ const CreatePost = () => {
     ],
     onUpdate({ editor }) {
       const content = editor.getText();
-      if (content.trim().length > 0) wrote.current = true
-      else wrote.current = false
+      if (content.trim().length > 0) wrote.current = true;
+      else wrote.current = false;
     },
     editorProps: {
       handleKeyDown(view, event) {
@@ -128,34 +128,76 @@ const CreatePost = () => {
         const clipboardData = event.clipboardData;
         if (!clipboardData) return false;
 
+        // Nếu clipboard có HTML với <img>, thì KHÔNG xử lý upload lại nữa
+        const html = clipboardData.getData("text/html");
+        if (html && html.includes("<img")) {
+          console.log("Đã có <img> trong HTML clipboard → bỏ qua upload ảnh");
+          return false; // để trình duyệt xử lý mặc định
+        }
+
         const items = clipboardData.items;
 
         // Ưu tiên kiểm tra nếu có ảnh
         for (const item of items) {
-          if (item.type.startsWith('image/')) {
+          if (item.type.startsWith("image/")) {
             const file = item.getAsFile();
             if (!file) continue;
 
-            const reader = new FileReader();
-            reader.onload = () => {
-              const src = reader.result;
-              if (typeof src === 'string') {
-                // Chèn hình vào editor
-                view.dispatch(
-                  view.state.tr.replaceSelectionWith(
-                    view.state.schema.nodes.image.create({ src })
-                  )
+            const placeholderText = "Đang upload ảnh...";
+            const { from } = view.state.selection;
+            const transaction = view.state.tr.insertText(placeholderText, from);
+            view.dispatch(transaction);
+
+            const uploadPos = from;
+
+            // ❗️Tách phần async ra ngoài để tránh gán async trực tiếp
+            setTimeout(async () => {
+              try {
+                const imageUrl = await uploadImageService(file);
+                console.log("tien xem imageURL ", imageUrl);
+                if (imageUrl) {
+                  const node = view.state.schema.nodes.image.create({
+                    src: imageUrl,
+                  });
+
+                  const tr = view.state.tr;
+                  tr.replaceWith(
+                    uploadPos,
+                    uploadPos + placeholderText.length,
+                    node
+                  );
+                  view.dispatch(tr);
+                }
+              } catch (error) {
+                const errorText = "❌ Upload ảnh thất bại";
+
+                // Xử lý mark màu nếu có
+                const textColorMark = view.state.schema.marks.textColor;
+                const errorNode = textColorMark
+                  ? view.state.schema.text(errorText, [
+                      textColorMark.create({ color: "red" }),
+                    ])
+                  : view.state.schema.text(errorText); // fallback nếu không có mark
+
+                const tr = view.state.tr.replaceWith(
+                  uploadPos,
+                  uploadPos + placeholderText.length,
+                  errorNode
                 );
+
+                view.dispatch(tr);
               }
-            };
-            reader.readAsDataURL(file);
-            return true; // Đã xử lý ảnh → không xử lý gì thêm
+            }, 0);
+
+            // Sau khi xử lý ảnh, không xử lý gì thêm
+            return true;
           }
         }
 
         // Nếu không có ảnh thì xử lý text như hiện tại
         const plainText = clipboardData.getData("text/plain");
         if (plainText) {
+          console.log("tien vao plain text ", plainText);
           view.dispatch(
             view.state.tr.insertText(plainText, view.state.selection.from)
           );
@@ -164,7 +206,6 @@ const CreatePost = () => {
 
         return false;
       },
-
     },
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -174,7 +215,7 @@ const CreatePost = () => {
   const [isPreview, setIsPreview] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [title, setTitle] = useState("");
-  const wrote = useRef(false)
+  const wrote = useRef(false);
 
   // Hàm này sẽ đóng bảng màu khi người dùng click ra ngoài
   const handleClickOutside = (event: MouseEvent) => {
@@ -190,20 +231,19 @@ const CreatePost = () => {
   };
   // Thêm event listener khi component mount
   useEffect(() => {
-
     const handleBeforeUnload = (e: any) => {
       if (wrote.current) {
-        e.preventDefault()
-        e.returnValue = ''
+        e.preventDefault();
+        e.returnValue = "";
       }
-    }
+    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
-      window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -217,23 +257,69 @@ const CreatePost = () => {
   //   Chèn hình
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     try {
+      if (!editor) return Toast.show({ text: "Đã có lỗi xảy ra khi drop ảnh" });
+
       event.preventDefault();
       setIsDragging(false);
+
       const file = event.dataTransfer.files[0];
       if (!file || !file.type.startsWith("image/")) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        editor
-          ?.chain()
-          .focus()
-          .setImage({ src: reader.result as string })
-          .run();
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-    } finally {
-    }
+      const placeholderText = "Đang upload ảnh...";
+
+      // Lấy vị trí thả chuột trong editor
+      const pos = editor?.view.posAtCoords({
+        left: event.clientX,
+        top: event.clientY,
+      })?.pos;
+
+      if (pos == null || pos === undefined) return;
+
+      // Chèn placeholder tại vị trí thả
+      editor?.chain().focus().insertContentAt(pos, placeholderText).run();
+
+      const uploadPos = pos;
+
+      // Tách phần async upload ra khỏi flow xử lý chính
+      setTimeout(async () => {
+        try {
+          const imageUrl = await uploadImageService(file);
+          console.log("Upload thành công:", imageUrl);
+
+          if (imageUrl) {
+            // Tạo node ảnh từ URL
+            const node = editor.schema.nodes.image.create({
+              src: imageUrl,
+            });
+
+            const { state, view } = editor;
+            const tr = state.tr;
+
+            tr.replaceWith(uploadPos, uploadPos + placeholderText.length, node);
+            view.dispatch(tr);
+          }
+        } catch (err) {
+          const errorText = "❌ Upload ảnh thất bại";
+          const { view } = editor;
+
+          // Xử lý mark màu nếu có
+          const textColorMark = view.state.schema.marks.textColor;
+          const errorNode = textColorMark
+            ? view.state.schema.text(errorText, [
+                textColorMark.create({ color: "red" }),
+              ])
+            : view.state.schema.text(errorText); // fallback nếu không có mark
+
+          const tr = view.state.tr.replaceWith(
+            uploadPos,
+            uploadPos + placeholderText.length,
+            errorNode
+          );
+
+          view.dispatch(tr);
+        }
+      }, 0);
+    } catch (error) {}
   };
 
   const renderTitle = () => {
@@ -257,8 +343,9 @@ const CreatePost = () => {
         <div className="flex gap-2 border-b border-dim-border px-3 py-2">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("bold") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("bold") ? "bg-gray-300" : ""
+            }`}
           >
             <Bold
               color={`${editor.isActive("bold") ? "black" : "white"}`}
@@ -267,8 +354,9 @@ const CreatePost = () => {
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("italic") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("italic") ? "bg-gray-300" : ""
+            }`}
           >
             <Italic
               color={`${editor.isActive("italic") ? "black" : "white"}`}
@@ -277,8 +365,9 @@ const CreatePost = () => {
           </button>
           <button
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("strike") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("strike") ? "bg-gray-300" : ""
+            }`}
           >
             <Strikethrough
               color={`${editor.isActive("strike") ? "black" : "white"}`}
@@ -290,10 +379,11 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 1 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 1 })
-              ? "bg-gray-300 text-black"
-              : "text-white"
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("heading", { level: 1 })
+                ? "bg-gray-300 text-black"
+                : "text-white"
+            }`}
           >
             H1
           </button>
@@ -302,10 +392,11 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 2 })
-              ? "bg-gray-300 text-black"
-              : "text-white"
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("heading", { level: 2 })
+                ? "bg-gray-300 text-black"
+                : "text-white"
+            }`}
           >
             H2
           </button>
@@ -314,10 +405,11 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 3 })
-              ? "bg-gray-300 text-black"
-              : "text-white"
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("heading", { level: 3 })
+                ? "bg-gray-300 text-black"
+                : "text-white"
+            }`}
           >
             H3
           </button>
@@ -343,8 +435,9 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("bulletList") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("bulletList") ? "bg-gray-300" : ""
+            }`}
           >
             <List
               color={`${editor.isActive("bulletList") ? "black" : "white"}`}
@@ -357,8 +450,9 @@ const CreatePost = () => {
             onClick={() => {
               editor.chain().focus().toggleOrderedList().run();
             }}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("orderedList") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("orderedList") ? "bg-gray-300" : ""
+            }`}
           >
             <ListOrdered
               color={`${editor.isActive("orderedList") ? "black" : "white"}`}
@@ -369,8 +463,9 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("left").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "left" }) ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive({ textAlign: "left" }) ? "bg-gray-300" : ""
+            }`}
           >
             <AlignLeft
               color={editor.isActive({ textAlign: "left" }) ? "black" : "white"}
@@ -380,8 +475,9 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("center").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "center" }) ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive({ textAlign: "center" }) ? "bg-gray-300" : ""
+            }`}
           >
             <AlignCenter
               color={
@@ -393,8 +489,9 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("right").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "right" }) ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive({ textAlign: "right" }) ? "bg-gray-300" : ""
+            }`}
           >
             <AlignRight
               color={
@@ -406,8 +503,9 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("codeBlock") ? "bg-gray-300" : ""
-              }`}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive("codeBlock") ? "bg-gray-300" : ""
+            }`}
           >
             <Code2
               color={editor.isActive("codeBlock") ? "black" : "white"}
@@ -441,10 +539,7 @@ const CreatePost = () => {
             }}
             className="p-1 rounded hover:bg-gray-200"
           >
-            <LinkIcon
-              size={18}
-              color={"white"}
-            />
+            <LinkIcon size={18} color={"white"} />
           </button>
 
           <button
@@ -569,33 +664,34 @@ const CreatePost = () => {
   };
 
   const renderContentCreator = () => {
-    return <div className="flex-center items-stretch gap-12 flex-col xl:flex-row">
-      <div className="flex flex-1 flex-col">
-        {renderTitle()}
-        {renderRichText()}
-        {renderSubmit()}
-      </div>
-
-      {
-        isPreview && <div className="flex flex-1 flex-col border-1 border-dim-border rounded-lg">
-          {renderPreview()}
+    return (
+      <div className="flex-center items-stretch gap-12 flex-col xl:flex-row">
+        <div className="flex flex-1 flex-col">
+          {renderTitle()}
+          {renderRichText()}
+          {renderSubmit()}
         </div>
-      }
-    </div>
-  }
+
+        {isPreview && (
+          <div className="flex flex-1 flex-col border-1 border-dim-border rounded-lg">
+            {renderPreview()}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div
       className="flex flex-1 flex-col pt-16"
       onDragOver={(e) => {
         e.preventDefault();
-        if (e.dataTransfer.types && e.dataTransfer.types[0] === 'Files') {
+        if (e.dataTransfer.types && e.dataTransfer.types[0] === "Files") {
           setIsDragging(true);
         }
       }}
       onDragLeave={() => setIsDragging(false)}
     >
-
       {renderContentCreator()}
     </div>
   );

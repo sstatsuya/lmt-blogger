@@ -5,6 +5,7 @@ import {
   GET_USER_INFO,
   LOGIN,
   LOGOUT,
+  UPLOAD_IMAGE,
 } from "../constant/api";
 import { fetchAPI } from "../utils/ApiBase";
 import { formatPost, formatPosts } from "./adapter";
@@ -142,6 +143,27 @@ export const createPost = async ({
       });
       const data = formatPost(response);
       return resolve(data);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const uploadImageService = async (file: File) => {
+  return new Promise<string>(async (resolve, reject) => {
+    try {
+      const res: any = await fetchAPI({
+        url: UPLOAD_IMAGE,
+        file: file,
+        isUpload: true,
+      });
+
+      const data = await res.json();
+      return resolve(data.url);
     } catch (error: any) {
       const myError: IError = {
         isError: true,

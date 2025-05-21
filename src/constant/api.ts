@@ -1,7 +1,7 @@
 
 // export const DOMAIN = 'https://unreal-bach-hoa-xanh-sever.vercel.app'
 // const LOCAL_HOST = '192.168.110.147';
-// const LOCAL_HOST = '172.20.10.7';
+const LOCAL_HOST = 'localhost';
 
 
 
@@ -31,3 +31,4 @@ export const CREATE_NEW_PASSWORD = `${AUTHEN_DOMAIN}/authen/account/create-new-p
 export const GET_ALL_POST = `${DOMAIN}/post/posts`;
 export const CREATE_POST = `${DOMAIN}/post/create-post`;
 export const GET_POST_BY_ID = `${DOMAIN}/post/view`;
+export const UPLOAD_IMAGE = `${DOMAIN}/post/upload-image`;
