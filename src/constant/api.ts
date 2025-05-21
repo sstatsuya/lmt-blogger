@@ -1,7 +1,7 @@
 
 // export const DOMAIN = 'https://unreal-bach-hoa-xanh-sever.vercel.app'
 // const LOCAL_HOST = '192.168.110.147';
-const LOCAL_HOST = 'localhost';
+// const LOCAL_HOST = 'localhost';
 
 
 
