@@ -5,7 +5,7 @@ import { IError, initError, initPost, IPost } from "../../services/types";
 import { useEffect, useState } from "react";
 import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
-import { Button, Dropdown, Menu, Modal, Space } from "antd";
+import {  Dropdown, Modal, Space } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { Toast } from "../../utils";
 import { APP_ROUTE } from "../../App";
