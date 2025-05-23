@@ -1,5 +1,6 @@
 import {
   CREATE_POST,
+  DELETE_POST,
   GET_ALL_POST,
   GET_POST_BY_ID,
   GET_USER_INFO,
@@ -164,6 +165,27 @@ export const uploadImageService = async (file: File) => {
 
       const data = await res.json();
       return resolve(data.url);
+    } catch (error: any) {
+      const myError: IError = {
+        isError: true,
+        message: error.message || MESSAGE.DEFAULT_ERROR,
+      };
+      return reject(myError);
+    }
+  });
+};
+
+export const deletePostService = async (id: string) => {
+  return new Promise<IPost>(async (resolve, reject) => {
+    try {
+      const response: any = await fetchAPI({
+        url: DELETE_POST,
+        data: {
+          postID: id,
+        },
+      });
+      const data = formatPost(response);
+      return resolve(data);
     } catch (error: any) {
       const myError: IError = {
         isError: true,

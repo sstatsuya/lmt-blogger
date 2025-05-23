@@ -1,16 +1,87 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ANIMATIONS } from "../../assets";
 import TitleList from "./TitleList";
 import { IError, initError, initPost, IPost } from "../../services/types";
 import { useEffect, useState } from "react";
-import { getPostById } from "../../services";
+import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
+import { Button, Dropdown, Menu, Modal, Space } from "antd";
+import { EllipsisOutlined } from "@ant-design/icons";
+import { Toast } from "../../utils";
+import { APP_ROUTE } from "../../App";
+
+const VerticalDotsDropdown = ({ options }: { options: any }) => (
+  <Dropdown
+    menu={{
+      items: options,
+    }}
+    placement="bottomRight"
+  >
+    <a onClick={(e) => e.preventDefault()} style={{ cursor: "pointer" }}>
+      <Space>
+        <EllipsisOutlined style={{ fontSize: "20px", color: "#fff" }} />
+      </Space>
+    </a>
+  </Dropdown>
+);
 
 const PostDetail = () => {
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<IError>(initError);
   const [post, setPost] = useState<IPost>(initPost);
   const { id } = useParams();
+  const [isOpenModalDelete, setOpenModalDelete] = useState(false);
+  const [isDeletingPost, setDeletingPost] = useState(false);
+
+  const onDeletePost = async () => {
+    try {
+      setError(initError);
+      setDeletingPost(true);
+      await deletePostService(id!);
+      navigate(APP_ROUTE.POST);
+      Toast.show({ text: "Xoá thành công" });
+    } catch (error) {
+      Toast.show({ text: "Đã có lỗi khi xoá bài viết" });
+      console.log("tien xem error ", error);
+      setError(error as IError);
+    } finally {
+      setDeletingPost(false);
+    }
+  };
+
+  const renderModalDelete = () => (
+    <Modal
+      className="custom-dark-modal"
+      title={"Xoá bài viết"}
+      closable={{ "aria-label": "Custom Close Button" }}
+      open={isOpenModalDelete}
+      onOk={onDeletePost}
+      onCancel={() => setOpenModalDelete(false)}
+      confirmLoading={isDeletingPost}
+    >
+      <p>Bạn có muốn xoá bài viết này không?</p>
+    </Modal>
+  );
+
+  const options = [
+    {
+      label: "Chỉnh sửa",
+      key: "edit",
+    },
+    {
+      label: "Xem chi tiết",
+      key: "view",
+    },
+    {
+      label: "Xóa",
+      key: "delete",
+      danger: true, // Đặt màu đỏ cho hành động xóa
+      onClick: () => {
+        setOpenModalDelete(true);
+      },
+    },
+  ];
 
   const getPost = async () => {
     try {
@@ -19,6 +90,8 @@ const PostDetail = () => {
       const response = await getPostById(id!);
       setPost(response);
     } catch (error) {
+      console.log("tien xem error ", error);
+      setError(error as IError);
     } finally {
       setLoading(false);
     }
@@ -38,13 +111,16 @@ const PostDetail = () => {
 
   const renderPreview = () => {
     return (
-        <>
-        <p className="text-white font-semibold text-4xl mb-12 px-4">{post.title}</p>
+      <>
+        <p className="text-white font-semibold text-4xl mb-12 px-4 flex flex-row justify-between">
+          {post.title}
+          <VerticalDotsDropdown options={options} />
+        </p>
         <div
           className="px-4 bg-transparent text-black rounded prose prose-invert max-w-none preview-container"
           dangerouslySetInnerHTML={{ __html: post.content }} // Hiển thị HTML của editor
         />
-        </>
+      </>
     );
   };
 
@@ -64,7 +140,7 @@ const PostDetail = () => {
   const renderError = () => {
     return (
       <div className="flex flex-1 flex-col items-center">
-        <p className="text-white">Có lỗi xảy ra rồi</p>
+        <p className="text-white">{error.message}</p>
         <div
           onClick={() => getPostById(id!)}
           className="mt-12 text-center w-32 cursor-pointer  py-2 border-1 border-border rounded-lg bg-title hover:scale-105 transition-transform duration-200"
@@ -91,6 +167,7 @@ const PostDetail = () => {
       {isLoading && renderLoading()}
       {!isLoading && !error.isError && renderContent()}
       {!isLoading && error.isError && renderError()}
+      {renderModalDelete()}
     </div>
   );
 };

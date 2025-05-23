@@ -22,7 +22,7 @@
     "@tiptap/pm": "^2.11.9",
     "@tiptap/react": "^2.11.9",
     "@tiptap/starter-kit": "^2.11.9",
-    "antd": "^5.24.8",
+    "antd": "^5.25.2",
     "dompurify": "^3.2.5",
     "framer-motion": "^12.11.0",
     "jsdom": "^26.1.0",

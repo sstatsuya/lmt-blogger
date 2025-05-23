@@ -34,6 +34,7 @@ import { addRandomIdsToHeadings, Toast } from "../../utils";
 import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
 import { createPost, uploadImageService } from "../../services";
+import { useNavigate } from "react-router-dom";
 
 Heading.configure({
   levels: [1, 2, 3],
@@ -57,6 +58,7 @@ const CustomOrderedList = OrderedList.extend({
 
 const TEXT_PLACEHOLDER = "Soạn nội dung tại đây...";
 const CreatePost = () => {
+  const navigate = useNavigate();
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -602,8 +604,10 @@ const CreatePost = () => {
   const handlePost = async (title: string, content: string) => {
     try {
       (window as any).props.showLoading();
-      await createPost({ title, content });
+      const res = await createPost({ title, content });
+      console.log("tien xem res create post ", res);
       Toast.show({ text: "Tạo bài viết thành công" });
+      navigate("/post/" + res.id);
     } catch (error: any) {
       Toast.show({ text: "Tạo bài viết thất bại: " + error.message });
     } finally {

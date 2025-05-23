@@ -37,7 +37,6 @@ export const fetchAPI = async ({
           headers: headers,
           body: imageData,
         });
-        console.log("tien xem res ", res);
       } else {
         res = await fetch(url, {
           method: method,
@@ -45,20 +44,20 @@ export const fetchAPI = async ({
           ...(method !== "GET" ? { body: JSON.stringify(data) } : {}),
         });
       }
-      if (res.status === 500)
+      let response;
+      if (!isUpload) response = await res.json();
+      else response = res;
+      if (res.status === 500) {
         throw {
-          message: "Interal Server Error",
+          message: response.message || "Interal Server Error",
         };
+      }
 
       if (res.status === 404) {
         throw {
           message: "Không tìm thấy URL",
         };
       }
-
-      let response;
-      if (!isUpload) response = await res.json();
-      else response = res;
 
       if (!res.ok) {
         throw response;
