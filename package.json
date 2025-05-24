@@ -25,6 +25,7 @@
     "antd": "^5.25.2",
     "dompurify": "^3.2.5",
     "framer-motion": "^12.11.0",
+    "html-react-parser": "^5.2.5",
     "jsdom": "^26.1.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.507.0",
@@ -33,13 +34,15 @@
     "react": "^19.0.0",
     "react-color": "^2.19.3",
     "react-dom": "^19.0.0",
+    "react-medium-image-zoom": "^5.2.14",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.2",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "tiptap-extension-resize-image": "^1.2.2"
+    "tiptap-extension-resize-image": "^1.2.2",
+    "yet-another-react-lightbox": "^3.23.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

@@ -43,6 +43,8 @@ export const getUserInfo = (response?: IUserInfo) => {
           localStorage.setItem(KEYS.TOKEN, response.token);
           localStorage.setItem(KEYS.UPLOAD_KEY, response.uploadKey);
         }
+        // Save userinfo into localstorage
+        localStorage.setItem(KEYS.USER_INFO, JSON.stringify(response));
         dispatch({ type: GET_USER_INFO, payload: response });
         resolve(response);
       } catch (error) {
@@ -52,6 +54,11 @@ export const getUserInfo = (response?: IUserInfo) => {
     });
   };
 };
+
+export const handleRemoveUser = () => {
+  localStorage.setItem(KEYS.TOKEN, "");
+  localStorage.setItem(KEYS.UPLOAD_KEY, "");
+}
 
 export const logoutAction = () => {
   return (dispatch: any) => {
@@ -63,8 +70,7 @@ export const logoutAction = () => {
         console.log("error in action logout", error);
         reject(error);
       } finally {
-        localStorage.setItem(KEYS.TOKEN, "");
-        localStorage.setItem(KEYS.UPLOAD_KEY, "");
+        handleRemoveUser();
         dispatch({ type: LOGOUT });
       }
     });

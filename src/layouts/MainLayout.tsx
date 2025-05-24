@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { IMAGES } from "../assets";
 import * as actions from "../redux/actions";
 import { ClipLoader } from "react-spinners";
+import { KEYS } from "../storage";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -11,7 +12,15 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const profile = useSelector((state: RootReducerType) => state.profileReducer);
   const [isVerifying, setVerifying] = useState(false);
 
-  const verifyUser = async () => {
+  const getLocalStorageProfile = () => {
+    const profileData = localStorage.getItem(KEYS.USER_INFO);
+    if (profileData) {
+      dispatch({ type: actions.GET_USER_INFO, payload: JSON.parse(profileData) });
+    }
+    else getUserInfo();
+  }
+
+  const getUserInfo = async () => {
     try {
       // (window as any).props.showLoading();
       setVerifying(true);
@@ -43,7 +52,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     window.addEventListener("load", stopPageProgress); // Dừng thanh progress khi trang đã tải xong
 
     // Lấy thông tin user
-    verifyUser();
+    getLocalStorageProfile();
 
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -81,9 +90,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       return (
         <div
           onClick={() => navigate(APP_ROUTE.LOGIN)}
-          className={`cursor-pointer  ${
-            location.pathname === APP_ROUTE.LOGIN ? "text-title" : "text-white"
-          } hover:text-title animate-transition`}
+          className={`cursor-pointer  ${location.pathname === APP_ROUTE.LOGIN ? "text-title" : "text-white"
+            } hover:text-title animate-transition`}
         >
           Đăng nhập
         </div>
@@ -142,20 +150,18 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
         <div
           onClick={() => navigate(APP_ROUTE.POST)}
-          className={`cursor-pointer ${
-            location.pathname === APP_ROUTE.POST ? "text-title" : "text-white"
-          } hover:text-title animate-transition`}
+          className={`cursor-pointer ${location.pathname === APP_ROUTE.POST ? "text-title" : "text-white"
+            } hover:text-title animate-transition`}
         >
           Bài viết
         </div>
 
         <div
           onClick={() => handleGoToCreatePost()}
-          className={`cursor-pointer ${
-            location.pathname === APP_ROUTE.CREATE_POST
-              ? "text-title"
-              : "text-white"
-          } hover:text-title animate-transition`}
+          className={`cursor-pointer ${location.pathname === APP_ROUTE.CREATE_POST
+            ? "text-title"
+            : "text-white"
+            } hover:text-title animate-transition`}
         >
           Tạo bài viết
         </div>
@@ -184,9 +190,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className={"flex flex-col w-full"}>
       <div
-        className={`flex flex-col min-h-screen relative ${
-          isSignInPage ? "" : "xl:px-[10%] px-[5%]"
-        }`}
+        className={`flex flex-col min-h-screen relative ${isSignInPage ? "" : "xl:px-[10%] px-[5%]"
+          }`}
       >
         {!isSignInPage && (
           <>

@@ -1,3 +1,5 @@
+import { handleRemoveUser } from "../redux/actions";
+import { store } from "../redux/store";
 import { IError } from "../services/types";
 import { KEYS } from "../storage";
 
@@ -50,6 +52,17 @@ export const fetchAPI = async ({
       if (res.status === 500) {
         throw {
           message: response.message || "Interal Server Error",
+        };
+      }
+      if (res.status === 401) {
+        handleRemoveUser();
+        // window.location.href = '/login';
+        // console.log('tien vao')
+        // store.dispatch({
+        //   type: "LOGOUT",
+        // })
+        throw {
+          message: "Phiên đăng nhập đã hết hạn",
         };
       }
 

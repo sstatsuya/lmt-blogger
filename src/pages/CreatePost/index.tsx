@@ -163,6 +163,7 @@ const CreatePost = () => {
                 if (imageUrl) {
                   const node = view.state.schema.nodes.image.create({
                     src: imageUrl,
+                    style: 'width: 60%; height: auto;',
                   });
 
                   const tr = view.state.tr;
@@ -575,7 +576,7 @@ const CreatePost = () => {
 
           <EditorContent
             editor={editor}
-            className="p-4 w-full max-w-full prose prose-invert relative"
+            className="p-4 w-full max-w-full prose prose-invert relative h-[50vh] overflow-y-auto custom-scroll"
             style={{ outline: "none" }}
             onDrop={handleDrop}
           />

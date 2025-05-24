@@ -63,3 +63,25 @@
   background: rgb(117, 3, 183) !important; /* Màu xanh lá */
   height: 4px !important;
 }
+
+/* Thanh scroll trong editor */
+.custom-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #070b16; /* Màu tím đậm */
+  border-radius: 8px;
+  border: 2px solid transparent; /* tạo padding */
+  background-clip: content-box;
+}
+
+/* Firefox */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #070b16 transparent;
+}

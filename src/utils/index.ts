@@ -43,3 +43,14 @@ export const stopPageProgress = (): void => {
 export const configurePageProgress = (): void => {
   NProgress.configure({ showSpinner: false });
 };
+
+// lấy hình từ html content
+export const extractImageUrlsFromHtml = (htmlString: string): { src: string }[] => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  const images = Array.from(doc.querySelectorAll('img'));
+  return images
+    .map((img) => ({ src: img.src }))
+    .filter((item) => item.src) || [];
+}
+

@@ -2,15 +2,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ANIMATIONS } from "../../assets";
 import TitleList from "./TitleList";
 import { IError, initError, initPost, IPost } from "../../services/types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
-import { Dropdown, Modal, Space } from "antd";
+import { Dropdown, Modal, } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
-import { Toast } from "../../utils";
+import { extractImageUrlsFromHtml, Toast } from "../../utils";
 import { APP_ROUTE } from "../../App";
 import { useSelector } from "react-redux";
 import { RootReducerType } from "../../redux/store";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 const VerticalDotsDropdown = ({ options }: { options: any }) => (
   <Dropdown
@@ -20,9 +22,7 @@ const VerticalDotsDropdown = ({ options }: { options: any }) => (
     placement="bottomRight"
   >
     <a onClick={(e) => e.preventDefault()} style={{ cursor: "pointer" }}>
-      <Space>
-        <EllipsisOutlined style={{ fontSize: "20px", color: "#fff" }} />
-      </Space>
+      <EllipsisOutlined style={{ fontSize: "20px", color: "#fff" }} />
     </a>
   </Dropdown>
 );
@@ -36,6 +36,9 @@ const PostDetail = () => {
   const [isOpenModalDelete, setOpenModalDelete] = useState(false);
   const [isDeletingPost, setDeletingPost] = useState(false);
   const profile = useSelector((state: RootReducerType) => state.profileReducer);
+  const [isOpenLightBox, setOpenLightbox] = useState(false);
+  const imgs = extractImageUrlsFromHtml(post.content);
+
 
   const onDeletePost = async () => {
     try {
@@ -120,6 +123,10 @@ const PostDetail = () => {
     }
   };
 
+  const handleClick = (e: any) => {
+    if (e.target.tagName === "IMG") setOpenLightbox(true);
+  }
+
   const renderPreview = () => {
     return (
       <>
@@ -128,6 +135,7 @@ const PostDetail = () => {
           {profile.id === post.author.id && <VerticalDotsDropdown options={options} />}
         </p>
         <div
+          onClick={handleClick}
           className="px-4 bg-transparent text-black rounded prose prose-invert max-w-none preview-container"
           dangerouslySetInnerHTML={{ __html: post.content }} // Hiển thị HTML của editor
         />
@@ -169,6 +177,12 @@ const PostDetail = () => {
           <TitleList html={post.content} scrollToHeading={scrollToHeading} />
         </div>
         <div className="w-[80%] pl-4">{renderPreview()}</div>
+        <Lightbox
+          open={isOpenLightBox}
+          close={() => setOpenLightbox(false)}
+          slides={imgs}
+          carousel={{ finite: true }}
+        />
       </>
     );
   };
