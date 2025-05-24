@@ -33,8 +33,8 @@ import Link from "@tiptap/extension-link";
 import { addRandomIdsToHeadings, Toast } from "../../utils";
 import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
-import { createPost, uploadImageService } from "../../services";
-import { useNavigate } from "react-router-dom";
+import { createPost, editPostService, uploadImageService } from "../../services";
+import { useLocation, useNavigate } from "react-router-dom";
 
 Heading.configure({
   levels: [1, 2, 3],
@@ -59,7 +59,10 @@ const CustomOrderedList = OrderedList.extend({
 const TEXT_PLACEHOLDER = "Soạn nội dung tại đây...";
 const CreatePost = () => {
   const navigate = useNavigate();
+  const location = useLocation()
+  const { isEdit, postID, postTitle, postContent } = location.state || { isEdit: false, postTitle: "", postContent: "" };
   const editor = useEditor({
+    content: postContent,
     extensions: [
       StarterKit.configure({
         bulletList: false,
@@ -177,8 +180,8 @@ const CreatePost = () => {
                 const textColorMark = view.state.schema.marks.textColor;
                 const errorNode = textColorMark
                   ? view.state.schema.text(errorText, [
-                      textColorMark.create({ color: "red" }),
-                    ])
+                    textColorMark.create({ color: "red" }),
+                  ])
                   : view.state.schema.text(errorText); // fallback nếu không có mark
 
                 const tr = view.state.tr.replaceWith(
@@ -216,8 +219,11 @@ const CreatePost = () => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isPreview, setIsPreview] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(postTitle);
   const wrote = useRef(false);
+
+  const submitText = isEdit ? "Cập nhật" : "Xuất bản";
+
 
   // Hàm này sẽ đóng bảng màu khi người dùng click ra ngoài
   const handleClickOutside = (event: MouseEvent) => {
@@ -308,8 +314,8 @@ const CreatePost = () => {
           const textColorMark = view.state.schema.marks.textColor;
           const errorNode = textColorMark
             ? view.state.schema.text(errorText, [
-                textColorMark.create({ color: "red" }),
-              ])
+              textColorMark.create({ color: "red" }),
+            ])
             : view.state.schema.text(errorText); // fallback nếu không có mark
 
           const tr = view.state.tr.replaceWith(
@@ -321,7 +327,7 @@ const CreatePost = () => {
           view.dispatch(tr);
         }
       }, 0);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const renderTitle = () => {
@@ -345,9 +351,8 @@ const CreatePost = () => {
         <div className="flex gap-2 border-b border-dim-border px-3 py-2">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("bold") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("bold") ? "bg-gray-300" : ""
+              }`}
           >
             <Bold
               color={`${editor.isActive("bold") ? "black" : "white"}`}
@@ -356,9 +361,8 @@ const CreatePost = () => {
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("italic") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("italic") ? "bg-gray-300" : ""
+              }`}
           >
             <Italic
               color={`${editor.isActive("italic") ? "black" : "white"}`}
@@ -367,9 +371,8 @@ const CreatePost = () => {
           </button>
           <button
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("strike") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("strike") ? "bg-gray-300" : ""
+              }`}
           >
             <Strikethrough
               color={`${editor.isActive("strike") ? "black" : "white"}`}
@@ -381,11 +384,10 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 1 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("heading", { level: 1 })
-                ? "bg-gray-300 text-black"
-                : "text-white"
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 1 })
+              ? "bg-gray-300 text-black"
+              : "text-white"
+              }`}
           >
             H1
           </button>
@@ -394,11 +396,10 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("heading", { level: 2 })
-                ? "bg-gray-300 text-black"
-                : "text-white"
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 2 })
+              ? "bg-gray-300 text-black"
+              : "text-white"
+              }`}
           >
             H2
           </button>
@@ -407,11 +408,10 @@ const CreatePost = () => {
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("heading", { level: 3 })
-                ? "bg-gray-300 text-black"
-                : "text-white"
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("heading", { level: 3 })
+              ? "bg-gray-300 text-black"
+              : "text-white"
+              }`}
           >
             H3
           </button>
@@ -437,9 +437,8 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("bulletList") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("bulletList") ? "bg-gray-300" : ""
+              }`}
           >
             <List
               color={`${editor.isActive("bulletList") ? "black" : "white"}`}
@@ -452,9 +451,8 @@ const CreatePost = () => {
             onClick={() => {
               editor.chain().focus().toggleOrderedList().run();
             }}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("orderedList") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("orderedList") ? "bg-gray-300" : ""
+              }`}
           >
             <ListOrdered
               color={`${editor.isActive("orderedList") ? "black" : "white"}`}
@@ -465,9 +463,8 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("left").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive({ textAlign: "left" }) ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "left" }) ? "bg-gray-300" : ""
+              }`}
           >
             <AlignLeft
               color={editor.isActive({ textAlign: "left" }) ? "black" : "white"}
@@ -477,9 +474,8 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("center").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive({ textAlign: "center" }) ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "center" }) ? "bg-gray-300" : ""
+              }`}
           >
             <AlignCenter
               color={
@@ -491,9 +487,8 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().setTextAlign("right").run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive({ textAlign: "right" }) ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive({ textAlign: "right" }) ? "bg-gray-300" : ""
+              }`}
           >
             <AlignRight
               color={
@@ -505,9 +500,8 @@ const CreatePost = () => {
 
           <button
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`p-1 rounded hover:bg-gray-200 ${
-              editor.isActive("codeBlock") ? "bg-gray-300" : ""
-            }`}
+            className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("codeBlock") ? "bg-gray-300" : ""
+              }`}
           >
             <Code2
               color={editor.isActive("codeBlock") ? "black" : "white"}
@@ -604,10 +598,17 @@ const CreatePost = () => {
   const handlePost = async (title: string, content: string) => {
     try {
       (window as any).props.showLoading();
-      const res = await createPost({ title, content });
-      console.log("tien xem res create post ", res);
-      Toast.show({ text: "Tạo bài viết thành công" });
-      navigate("/post/" + res.id);
+      let res;
+      if (isEdit) {
+        res = await editPostService(postID, title, content);
+        Toast.show({ text: "Cập nhật bài viết thành công" });
+        navigate("/post/" + postID);
+      } else {
+        res = await createPost({ title, content });
+        Toast.show({ text: "Tạo bài viết thành công" });
+        navigate("/post/" + res.id);
+      }
+
     } catch (error: any) {
       Toast.show({ text: "Tạo bài viết thất bại: " + error.message });
     } finally {
@@ -623,7 +624,7 @@ const CreatePost = () => {
     if (!validateRes) return;
 
     (window as any).props.showConfirmModal({
-      content: "Bạn có chắc chắn muốn xuất bản bài viết luôn không?",
+      content: `Bạn có chắc chắn muốn ${submitText} bài viết luôn không?`,
       onClick: () => {
         handlePost(title, htmlContent);
       },
@@ -637,7 +638,7 @@ const CreatePost = () => {
           onClick={() => onSubmit()}
           className="w-full py-2 bg-title text-white font-semibold text-center rounded-lg mt-4 cursor-pointer hover:opacity-80 transition-all duration-500"
         >
-          Xuất bản
+          {submitText}
         </div>
         <div
           onClick={() => setIsPreview(!isPreview)}

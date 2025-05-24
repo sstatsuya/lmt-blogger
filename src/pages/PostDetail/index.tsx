@@ -5,10 +5,12 @@ import { IError, initError, initPost, IPost } from "../../services/types";
 import { useEffect, useState } from "react";
 import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
-import {  Dropdown, Modal, Space } from "antd";
+import { Dropdown, Modal, Space } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { Toast } from "../../utils";
 import { APP_ROUTE } from "../../App";
+import { useSelector } from "react-redux";
+import { RootReducerType } from "../../redux/store";
 
 const VerticalDotsDropdown = ({ options }: { options: any }) => (
   <Dropdown
@@ -33,6 +35,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const [isOpenModalDelete, setOpenModalDelete] = useState(false);
   const [isDeletingPost, setDeletingPost] = useState(false);
+  const profile = useSelector((state: RootReducerType) => state.profileReducer);
 
   const onDeletePost = async () => {
     try {
@@ -68,6 +71,14 @@ const PostDetail = () => {
     {
       label: "Chỉnh sửa",
       key: "edit",
+      onClick: () => {
+        navigate(`${APP_ROUTE.CREATE_POST}/`, {
+          state: {
+            isEdit: true,
+            postID: post.id, postTitle: post.title, postContent: post.content
+          }
+        });
+      }
     },
     {
       label: "Xem chi tiết",
@@ -114,7 +125,7 @@ const PostDetail = () => {
       <>
         <p className="text-white font-semibold text-4xl mb-12 px-4 flex flex-row justify-between">
           {post.title}
-          <VerticalDotsDropdown options={options} />
+          {profile.id === post.author.id && <VerticalDotsDropdown options={options} />}
         </p>
         <div
           className="px-4 bg-transparent text-black rounded prose prose-invert max-w-none preview-container"

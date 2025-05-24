@@ -33,3 +33,4 @@ export const CREATE_POST = `${DOMAIN}/post/create-post`;
 export const DELETE_POST = `${DOMAIN}/post/delete-post`;
 export const GET_POST_BY_ID = `${DOMAIN}/post/view`;
 export const UPLOAD_IMAGE = `${DOMAIN}/post/upload-image`;
+export const EDIT_POST = `${DOMAIN}/post/edit-post`;
