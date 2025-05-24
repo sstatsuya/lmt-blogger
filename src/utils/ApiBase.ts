@@ -1,4 +1,3 @@
-import { handleRemoveUser } from "../redux/actions";
 import { IError } from "../services/types";
 import { KEYS } from "../storage";
 
