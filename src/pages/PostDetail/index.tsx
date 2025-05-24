@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ANIMATIONS } from "../../assets";
 import TitleList from "./TitleList";
 import { IError, initError, initPost, IPost } from "../../services/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
 import { Dropdown, Modal, } from "antd";
