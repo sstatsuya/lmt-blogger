@@ -7,7 +7,7 @@ import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
 import { Dropdown, Modal, } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
-import { extractImageUrlsFromHtml, Toast } from "../../utils";
+import { extractImageUrlsFromHtml, getImageSrcFromTarget, getIndFromArray, Toast } from "../../utils";
 import { APP_ROUTE } from "../../App";
 import { useSelector } from "react-redux";
 import { RootReducerType } from "../../redux/store";
@@ -37,6 +37,7 @@ const PostDetail = () => {
   const [isDeletingPost, setDeletingPost] = useState(false);
   const profile = useSelector((state: RootReducerType) => state.profileReducer);
   const [isOpenLightBox, setOpenLightbox] = useState(false);
+  const [lightBoxIndex, setLightBoxIndex] = useState(0);
   const imgs = extractImageUrlsFromHtml(post.content);
 
 
@@ -124,7 +125,12 @@ const PostDetail = () => {
   };
 
   const handleClick = (e: any) => {
-    if (e.target.tagName === "IMG") setOpenLightbox(true);
+    if (e.target.tagName === "IMG") {
+      const idx = getIndFromArray(imgs, getImageSrcFromTarget(e.target) || '')
+      console.log("tien xem idx ", idx);
+      setLightBoxIndex(idx);
+      setOpenLightbox(true);
+    }
   }
 
   const renderPreview = () => {
@@ -182,6 +188,7 @@ const PostDetail = () => {
           close={() => setOpenLightbox(false)}
           slides={imgs}
           carousel={{ finite: true }}
+          index={lightBoxIndex}
         />
       </>
     );

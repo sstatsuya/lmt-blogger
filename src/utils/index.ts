@@ -54,3 +54,13 @@ export const extractImageUrlsFromHtml = (htmlString: string): { src: string }[] 
     .filter((item) => item.src) || [];
 }
 
+
+export const getImageSrcFromTarget = (target: EventTarget) => {
+  if (target instanceof HTMLImageElement) {
+    return target.src;
+  }
+};
+
+export const getIndFromArray = (arr: any[], item: string) => {
+  return arr.findIndex(i => i.src === item)
+}
