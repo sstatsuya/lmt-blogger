@@ -53,17 +53,17 @@ export const fetchAPI = async ({
           message: response.message || "Interal Server Error",
         };
       }
-      if (res.status === 401) {
-        handleRemoveUser();
-        // window.location.href = '/login';
-        // console.log('tien vao')
-        // store.dispatch({
-        //   type: "LOGOUT",
-        // })
-        throw {
-          message: "Phiên đăng nhập đã hết hạn",
-        };
-      }
+      // if (res.status === 401) {
+      //   handleRemoveUser();
+      //   // window.location.href = '/login';
+      //   // console.log('tien vao')
+      //   // store.dispatch({
+      //   //   type: "LOGOUT",
+      //   // })
+      //   throw {
+      //     message: "Phiên đăng nhập đã hết hạn",
+      //   };
+      // }
 
       if (res.status === 404) {
         throw {
