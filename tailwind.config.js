@@ -74,6 +74,9 @@ module.exports = {
         },
         '.animate-transition': {
           transition: 'all 0.5s',
+        },
+        '.text-active': {
+          color: 'rgb(117, 3, 183)',
         }
       })
     },

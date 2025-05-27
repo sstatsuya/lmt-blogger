@@ -349,7 +349,7 @@ const CreatePost = () => {
     return (
       <div className="w-full mt-4 border-1 border-dim-border rounded-lg bg-gray-700">
         {/* Toolbar */}
-        <div className="flex gap-2 border-b border-dim-border px-3 py-2">
+        <div className="flex gap-2 border-b border-dim-border px-3 py-2 flex-wrap">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={`p-1 rounded hover:bg-gray-200 ${editor.isActive("bold") ? "bg-gray-300" : ""

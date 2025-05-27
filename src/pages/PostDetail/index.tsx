@@ -5,14 +5,20 @@ import { IError, initError, initPost, IPost } from "../../services/types";
 import { useEffect, useState } from "react";
 import { deletePostService, getPostById } from "../../services";
 import Lottie from "lottie-react";
-import { Dropdown, Modal, } from "antd";
+import { Dropdown, Modal } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
-import { extractImageUrlsFromHtml, getImageSrcFromTarget, getIndFromArray, Toast } from "../../utils";
+import {
+  extractImageUrlsFromHtml,
+  getImageSrcFromTarget,
+  getIndFromArray,
+  Toast,
+} from "../../utils";
 import { APP_ROUTE } from "../../App";
 import { useSelector } from "react-redux";
 import { RootReducerType } from "../../redux/store";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { ChevronRight, X } from "lucide-react";
 
 const VerticalDotsDropdown = ({ options }: { options: any }) => (
   <Dropdown
@@ -39,7 +45,7 @@ const PostDetail = () => {
   const [isOpenLightBox, setOpenLightbox] = useState(false);
   const [lightBoxIndex, setLightBoxIndex] = useState(0);
   const imgs = extractImageUrlsFromHtml(post.content);
-
+  const [isOpenLeftBar, setOpenLeftBar] = useState(false);
 
   const onDeletePost = async () => {
     try {
@@ -79,10 +85,12 @@ const PostDetail = () => {
         navigate(`${APP_ROUTE.CREATE_POST}/`, {
           state: {
             isEdit: true,
-            postID: post.id, postTitle: post.title, postContent: post.content
-          }
+            postID: post.id,
+            postTitle: post.title,
+            postContent: post.content,
+          },
         });
-      }
+      },
     },
     {
       label: "Xem chi tiết",
@@ -117,6 +125,7 @@ const PostDetail = () => {
   }, []);
 
   const scrollToHeading = (id: string) => {
+    setOpenLeftBar(false);
     const el = document.getElementById(id);
     if (el) {
       const y = el.getBoundingClientRect().top + window.pageYOffset - 120; // trừ 40px
@@ -126,19 +135,21 @@ const PostDetail = () => {
 
   const handleClick = (e: any) => {
     if (e.target.tagName === "IMG") {
-      const idx = getIndFromArray(imgs, getImageSrcFromTarget(e.target) || '')
+      const idx = getIndFromArray(imgs, getImageSrcFromTarget(e.target) || "");
       console.log("tien xem idx ", idx);
       setLightBoxIndex(idx);
       setOpenLightbox(true);
     }
-  }
+  };
 
   const renderPreview = () => {
     return (
       <>
         <p className="text-white font-semibold text-4xl mb-12 px-4 flex flex-row justify-between">
           {post.title}
-          {profile.id === post.author.id && <VerticalDotsDropdown options={options} />}
+          {profile.id === post.author.id && (
+            <VerticalDotsDropdown options={options} />
+          )}
         </p>
         <div
           onClick={handleClick}
@@ -176,13 +187,53 @@ const PostDetail = () => {
     );
   };
 
+  const renderSideBar = () => {
+    return (
+      <>
+        {isOpenLeftBar && (
+          <div className="fixed w-full h-full bg-[rgba(0,0,0,0.7)] z-20" />
+        )}
+        <div
+          className={`fixed top-0 left-0 h-full w-64 bg-[#040a16] text-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+            isOpenLeftBar ? "translate-x-0" : "-translate-x-full"
+          } border-r border-r-[#363944]`}
+        >
+          <div className="flex justify-between items-center p-4 border-b border-white/20">
+            <span className="text-lg font-semibold">Tiêu đề</span>
+            <div className="flex flex-center">
+              <button onClick={() => setOpenLeftBar(false)}>
+                <X size={24} color="white" />
+              </button>
+            </div>
+          </div>
+          <div className="p-4">
+            <TitleList html={post.content} scrollToHeading={scrollToHeading} />
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const renderMenuBtn = () => {
+    return (
+      <div
+        onClick={() => setOpenLeftBar(true)}
+        className={`fixed bottom-8 left-4 md:hidden cursor-pointerhover:text-active animate-transition z-50 bg-white rounded-full w-8 h-8 flex flex-center`}
+      >
+        <ChevronRight className="text-white" color="black" />
+      </div>
+    );
+  };
+
   const renderContent = () => {
     return (
       <>
-        <div className="w-[20%] border-r-1 border-border relative flex-1">
+        {renderMenuBtn()}
+        <div className="hidden md:w-[20%] border-r-1 border-border relative flex-1">
           <TitleList html={post.content} scrollToHeading={scrollToHeading} />
         </div>
-        <div className="w-[80%] pl-4">{renderPreview()}</div>
+
+        <div className="w-full md:w-[80%] pl-4">{renderPreview()}</div>
         <Lightbox
           open={isOpenLightBox}
           close={() => setOpenLightbox(false)}
@@ -200,6 +251,7 @@ const PostDetail = () => {
       {!isLoading && !error.isError && renderContent()}
       {!isLoading && error.isError && renderError()}
       {renderModalDelete()}
+      {renderSideBar()}
     </div>
   );
 };

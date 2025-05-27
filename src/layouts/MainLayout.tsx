@@ -11,14 +11,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const dispatch: any = useDispatch();
   const profile = useSelector((state: RootReducerType) => state.profileReducer);
   const [isVerifying, setVerifying] = useState(false);
+  const [isOpenLeftBar, setOpenLeftBar] = useState(false);
 
   const getLocalStorageProfile = () => {
     const profileData = localStorage.getItem(KEYS.USER_INFO);
     if (profileData) {
-      dispatch({ type: actions.GET_USER_INFO, payload: JSON.parse(profileData) });
-    }
-    else getUserInfo();
-  }
+      dispatch({
+        type: actions.GET_USER_INFO,
+        payload: JSON.parse(profileData),
+      });
+    } else getUserInfo();
+  };
 
   const getUserInfo = async () => {
     try {
@@ -89,25 +92,29 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     if (!profile.id)
       return (
         <div
-          onClick={() => navigate(APP_ROUTE.LOGIN)}
-          className={`cursor-pointer  ${location.pathname === APP_ROUTE.LOGIN ? "text-title" : "text-white"
-            } hover:text-title animate-transition`}
+          onClick={() => {
+            setOpenLeftBar(false);
+            navigate(APP_ROUTE.LOGIN);
+          }}
+          className={`cursor-pointer  ${
+            location.pathname === APP_ROUTE.LOGIN ? "text-active" : "text-white"
+          } hover:text-active animate-transition`}
         >
           Đăng nhập
         </div>
       );
     else
       return (
-        <div className="flex flex-center gap-8">
+        <div className="flex flex-col md:flex-row md:flex-center gap-4 md:gap-8">
           <div className={`text-white`}>
             {"Xin chào"}
-            <span className="text-title font-bold text-lg ml-2">
+            <span className="text-active font-bold text-lg ml-2">
               {profile.fullname}
             </span>
           </div>
           <div
             onClick={() => handleLogout()}
-            className={`cursor-pointer text-white hover:text-title animate-transition`}
+            className={`cursor-pointer text-white hover:text-active animate-transition`}
           >
             Đăng xuất
           </div>
@@ -126,6 +133,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const handleGoToCreatePost = () => {
+    setOpenLeftBar(false);
     if (!profile.id) {
       Toast.show({ text: "Bạn cần đăng nhập trước" });
       navigate(APP_ROUTE.LOGIN, {
@@ -139,40 +147,57 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const renderUtilities = () => {
     return (
       <div className="flex-between gap-8">
-        <div className="hidden sm:flex min-w-48 hover:bg-hover group transition-all duration-200 ease-in-out cursor-pointer flex-between px-2 py-1.5 border-1 border-border rounded-md">
-          <p className="text-plhd text-sm pl-2 group-hover:text-white transition-all ease-in-out duration-200">
-            Search...
-          </p>
-          <div className="bg-highlight flex-center text-xs rounded-sm p-0.5 group-hover:bg-transparent group-hover:text-white duration-200 transition-all ease-in-out">
-            ⌘K
+        <div className="hidden md:flex flex-between gap-8">
+          <div className="min-w-48 hover:bg-hover group transition-all duration-200 ease-in-out cursor-pointer flex-between px-2 py-1.5 border-1 border-border rounded-md">
+            <p className="text-plhd text-sm pl-2 group-hover:text-white transition-all ease-in-out duration-200">
+              Search...
+            </p>
+            <div className="bg-highlight flex-center text-xs rounded-sm p-0.5 group-hover:bg-transparent group-hover:text-white duration-200 transition-all ease-in-out">
+              ⌘K
+            </div>
+          </div>
+          <div
+            onClick={() => navigate(APP_ROUTE.POST)}
+            className={`cursor-pointer ${
+              location.pathname === APP_ROUTE.POST
+                ? "text-active"
+                : "text-white"
+            } hover:text-active animate-transition`}
+          >
+            Bài viết
+          </div>
+
+          <div
+            onClick={() => handleGoToCreatePost()}
+            className={`cursor-pointer ${
+              location.pathname === APP_ROUTE.CREATE_POST
+                ? "text-active"
+                : "text-white"
+            } hover:text-active animate-transition`}
+          >
+            Tạo bài viết
+          </div>
+
+          {renderLoginBtn()}
+
+          <UtilityBtn
+            icon={
+              <MoonOutlined
+                style={{ fontSize: "18px" }}
+                className="text-white"
+              />
+            }
+          />
+        </div>
+
+        <div className="flex md:hidden">
+          <div
+            onClick={() => setOpenLeftBar(true)}
+            className={`cursor-pointerhover:text-active animate-transition`}
+          >
+            <Menu className="text-white" color="white" />
           </div>
         </div>
-
-        <div
-          onClick={() => navigate(APP_ROUTE.POST)}
-          className={`cursor-pointer ${location.pathname === APP_ROUTE.POST ? "text-title" : "text-white"
-            } hover:text-title animate-transition`}
-        >
-          Bài viết
-        </div>
-
-        <div
-          onClick={() => handleGoToCreatePost()}
-          className={`cursor-pointer ${location.pathname === APP_ROUTE.CREATE_POST
-            ? "text-title"
-            : "text-white"
-            } hover:text-title animate-transition`}
-        >
-          Tạo bài viết
-        </div>
-
-        {renderLoginBtn()}
-
-        <UtilityBtn
-          icon={
-            <MoonOutlined style={{ fontSize: "18px" }} className="text-white" />
-          }
-        />
       </div>
     );
   };
@@ -185,13 +210,74 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const renderSideBar = () => {
+    return (
+      <>
+        {isOpenLeftBar && (
+          <div className="fixed w-full h-full bg-[rgba(0,0,0,0.7)] z-20" />
+        )}
+        <div
+          className={`fixed top-0 right-0 h-full w-64 bg-[#040a16] text-white shadow-lg z-50 transform transition-transform duration-300 ${
+            isOpenLeftBar ? "translate-x-0" : "translate-x-full"
+          } border-l-[#363944] border-l-1`}
+        >
+          <div className="flex justify-between items-center p-4 border-b border-white/20">
+            <span className="text-lg font-semibold">Menu</span>
+            <div className="flex flex-center">
+              <UtilityBtn
+                icon={
+                  <MoonOutlined
+                    style={{ fontSize: "18px" }}
+                    className="text-white"
+                  />
+                }
+              />
+              <button onClick={() => setOpenLeftBar(false)}>
+                <X size={24} color="white" />
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 p-4">
+            <div
+              onClick={() => {
+                navigate(APP_ROUTE.POST);
+                setOpenLeftBar(false);
+              }}
+              className={`cursor-pointer ${
+                location.pathname === APP_ROUTE.POST
+                  ? "text-active"
+                  : "text-white"
+              } hover:text-active animate-transition`}
+            >
+              Bài viết
+            </div>
+
+            <div
+              onClick={() => handleGoToCreatePost()}
+              className={`cursor-pointer ${
+                location.pathname === APP_ROUTE.CREATE_POST
+                  ? "text-active"
+                  : "text-white"
+              } hover:text-active animate-transition`}
+            >
+              Tạo bài viết
+            </div>
+
+            {renderLoginBtn()}
+          </div>
+        </div>
+      </>
+    );
+  };
+
   const isSignInPage = location.pathname === APP_ROUTE.LOGIN;
 
   return (
     <div className={"flex flex-col w-full"}>
       <div
-        className={`flex flex-col min-h-screen relative ${isSignInPage ? "" : "xl:px-[10%] px-[5%]"
-          }`}
+        className={`flex flex-col min-h-screen relative ${
+          isSignInPage ? "" : "xl:px-[10%] px-[5%]"
+        } `}
       >
         {!isSignInPage && (
           <>
@@ -213,6 +299,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         )}
         {children}
       </div>
+      {renderSideBar()}
       {renderFooter()}
     </div>
   );
@@ -232,6 +319,7 @@ import {
   stopPageProgress,
   Toast,
 } from "../utils";
+import { Menu, X } from "lucide-react";
 
 const UtilityBtn = ({ icon }: { icon: any }) => {
   return (
