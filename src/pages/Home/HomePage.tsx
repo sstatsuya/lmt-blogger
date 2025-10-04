@@ -68,7 +68,15 @@ const HomePage = () => {
         </h4>
 
         <div className="flex-center mt-6 gap-4">
-          <div className="text-center w-32 cursor-pointer  py-2 border-1 border-border rounded-lg bg-title hover:scale-105 transition-transform duration-200">
+          <div 
+            className="text-center w-32 cursor-pointer  py-2 border-1 border-border rounded-lg bg-title hover:scale-105 transition-transform duration-200"
+            onClick={() => {
+              const getInTouchSection = document.getElementById('get-in-touch');
+              if (getInTouchSection) {
+                getInTouchSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
             <span className="text-white">Liên hệ</span>
           </div>
 
@@ -78,14 +86,18 @@ const HomePage = () => {
             </span>
           </div>
 
-          <div className="p-2 cursor-pointer group rounded-md  flex-center transition-all duration-500 transform hover:scale-150 hover:rotate-20">
+          <div 
+            className="p-2 cursor-pointer group rounded-md  flex-center transition-all duration-500 transform hover:scale-150 hover:rotate-20"
+            onClick={() => window.open('https://github.com/sstatsuya?tab=repositories', '_blank')}
+          >
             <GithubOutlined
               style={{ fontSize: "24px" }}
               className="text-white group-hover:text-title"
             />
           </div>
 
-          <div className="p-2 cursor-pointer group rounded-md  flex-center transition-all duration-500 transform hover:scale-150 hover:rotate-20">
+          <div className="p-2 cursor-pointer group rounded-md  flex-center transition-all duration-500 transform hover:scale-150 hover:rotate-20"
+          onClick={() => window.open('https://www.linkedin.com/in/tien-luong-minh-03677b238/', '_blank')}>
             <LinkedinOutlined
               style={{ fontSize: "24px" }}
               className="text-white group-hover:text-title"
@@ -130,7 +142,7 @@ const HomePage = () => {
 
   const renderGetInTouch = () => {
     return (
-      <div>
+      <div id="get-in-touch">
         <SectionTitle
           title="Get In Touch"
           desc="Nếu bạn có điều gì thắc mắc, hoặc muốn liên hệ với tôi"
