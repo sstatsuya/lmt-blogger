@@ -229,7 +229,7 @@ const PostDetail = () => {
     return (
       <>
         {renderMenuBtn()}
-        <div className="hidden md:w-[20%] border-r-1 border-border relative flex-1">
+        <div className="hidden md:block md:w-[20%] border-r-1 border-border relative flex-1">
           <TitleList html={post.content} scrollToHeading={scrollToHeading} />
         </div>
 
