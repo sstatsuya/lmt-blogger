@@ -28,6 +28,7 @@ export const initPost = {
   title: "",
   content: "",
   createDate: 1747192447000,
+  updateDate: 1747192447000,
   author: {
     id: "",
     avatar: "",
@@ -39,6 +40,7 @@ export interface IPost {
   title: string;
   content: string;
   createDate: number;
+  updateDate: number;
   author: {
     id: string;
     avatar: string;

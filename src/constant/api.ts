@@ -1,19 +1,16 @@
-
 // export const DOMAIN = 'https://unreal-bach-hoa-xanh-sever.vercel.app'
 // const LOCAL_HOST = '192.168.110.147';
-// const LOCAL_HOST = 'localhost';
+const LOCAL_HOST = "localhost";
 
 export const AUTHEN_DOMAIN = `https://authen-nodejs.vercel.app`;
 // export const AUTHEN_DOMAIN = `http://${LOCAL_HOST}:3000`;
-export const DOMAIN = `https://lmt-blog-server.vercel.app`;
-// export const DOMAIN = `http://${LOCAL_HOST}:3001`;
+// export const DOMAIN = `https://lmt-blog-server.vercel.app`;
+export const DOMAIN = `http://${LOCAL_HOST}:3001`;
 // export const LMT_DOMAIN = `http://${LOCAL_HOST}:3002`;
 
 // export const AUTHEN_DOMAIN = `http://${LOCAL_HOST}:3000`;
 // export const DOMAIN = `http://${LOCAL_HOST}:3001`;
 // export const LMT_DOMAIN = `http://${LOCAL_HOST}:3002`;
-
-
 
 // ===== User =====
 export const REGISTER = `${AUTHEN_DOMAIN}/authen/account/register`;
@@ -32,3 +29,6 @@ export const DELETE_POST = `${DOMAIN}/post/delete-post`;
 export const GET_POST_BY_ID = `${DOMAIN}/post/view`;
 export const UPLOAD_IMAGE = `${DOMAIN}/post/upload-image`;
 export const EDIT_POST = `${DOMAIN}/post/edit-post`;
+
+// ===== Post =====
+export const GET_CATEGORIES = `${DOMAIN}/category/getPostByCategory`;

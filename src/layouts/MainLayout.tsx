@@ -157,6 +157,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           <div
+            onClick={() => navigate(APP_ROUTE.CATEGORY)}
+            className={`cursor-pointer ${
+              location.pathname === APP_ROUTE.CATEGORY
+                ? "text-active"
+                : "text-white"
+            } hover:text-active animate-transition`}
+          >
+            Chủ đề
+          </div>
+
+          <div
             onClick={() => navigate(APP_ROUTE.POST)}
             className={`cursor-pointer ${
               location.pathname === APP_ROUTE.POST
@@ -238,6 +249,20 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           <div className="flex flex-col gap-4 p-4">
+            <div
+              onClick={() => {
+                navigate(APP_ROUTE.CATEGORY);
+                setOpenLeftBar(false);
+              }}
+              className={`cursor-pointer ${
+                location.pathname === APP_ROUTE.CATEGORY
+                  ? "text-active"
+                  : "text-white"
+              } hover:text-active animate-transition`}
+            >
+              Chủ đề
+            </div>
+
             <div
               onClick={() => {
                 navigate(APP_ROUTE.POST);

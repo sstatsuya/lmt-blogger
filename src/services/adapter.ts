@@ -14,3 +14,11 @@ export const formatPosts = (post: any): IPost[] => {
   }));
   return result;
 };
+
+export const formatCategories = (categories: any): ICategory[] => {
+  const result = categories.map((i: any) => ({
+    ...i,
+    id: i._id,
+  }));
+  return result;
+};

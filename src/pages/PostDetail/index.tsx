@@ -19,6 +19,7 @@ import { RootReducerType } from "../../redux/store";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { ChevronRight, X } from "lucide-react";
+import moment from "moment";
 
 const VerticalDotsDropdown = ({ options }: { options: any }) => (
   <Dropdown
@@ -146,7 +147,19 @@ const PostDetail = () => {
     return (
       <>
         <p className="text-white font-semibold text-4xl mb-12 px-4 flex flex-row justify-between">
-          {post.title}
+          <div>
+            <p>{post.title}</p>
+
+            <p className="text-xs text-gray-400 italic mt-2">
+              {post.updateDate
+                ? `(Chỉnh sửa lần cuối: ${moment(post.updateDate).format(
+                    "HH:mm DD/MM/YYYY"
+                  )})`
+                : `(Ngày tạo: ${moment(post.createDate).format(
+                    "HH:mm DD/MM/YYYY"
+                  )})`}
+            </p>
+          </div>
           {profile.id === post.author.id && (
             <VerticalDotsDropdown options={options} />
           )}
